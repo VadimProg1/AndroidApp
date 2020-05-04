@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.Gravity
 import android.view.Menu
@@ -194,46 +195,26 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        var itemview = item.itemId
-        val toast = Toast.makeText(applicationContext, "Saved!", Toast.LENGTH_SHORT)
+    public fun saveImageToStorage(){
+        val toast = Toast.makeText(applicationContext, "Image saved!", Toast.LENGTH_SHORT)
         toast.setGravity(Gravity.CENTER, 0, 0)
-        when(itemview){
-            R.id.image_save -> saveImageToInternalStorage()
-        }
-        return false
-    }
-
-    private fun saveImageToInternalStorage(){
-        // Get the image from drawable resource as drawable object
+        toast.show()
         val drawable = image_vieww.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
+        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, image_uri.toString() , "image")
+    }
 
-        // Get the context wrapper instance
-        val wrapper = ContextWrapper(applicationContext)
-
-        // Initializing a new file
-        // The bellow line return a directory in internal storage
-        var file = wrapper.getDir("images", Context.MODE_PRIVATE)
-
-
-        // Create a file to save the image
-        file = File(file, "${UUID.randomUUID()}.jpg")
-
-        try {
-            // Get the file output stream
-            val stream: OutputStream = FileOutputStream(file)
-
-            // Compress bitmap
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-
-            // Flush the stream
-            stream.flush()
-
-            // Close stream
-            stream.close()
-        } catch (e: IOException){ // Catch the exception
-            e.printStackTrace()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+        if(image_uri != null) {
+            when (itemview) {
+                R.id.image_save -> saveImageToStorage()
+            }
+            return false
+        }
+        else {
+            Toast.makeText(applicationContext, "Choose image!", Toast.LENGTH_SHORT).show()
+            return false
         }
     }
 }
