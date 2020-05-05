@@ -1,0 +1,2 @@
+rootProject.name='Mobile_app_photo_edit'
+include ':app'
