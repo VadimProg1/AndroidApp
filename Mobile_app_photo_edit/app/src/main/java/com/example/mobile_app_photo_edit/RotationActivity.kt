@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.image_view
 import kotlinx.android.synthetic.main.activity_rotation.*
@@ -31,12 +32,31 @@ class RotationActivity : AppCompatActivity() {
         image_vieww.setImageURI(image_uri)
         val drawable = image_vieww.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
+        seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                image_vieww.animate().rotation((progress.toFloat() - 45 + rotate))
+            }
 
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if (seekBar != null) {
+                   // rotate+= (seekBar.progress.toFloat() - 45)
+                }
+            }
+
+        })
         btn_rotate.setOnClickListener{
             rotate+= 90
             image_vieww.animate().rotation(rotate)
+            seekBar.progress = 45
+
+        }
+        btn_save.setOnClickListener{
             var matrix = Matrix()
-            matrix.postRotate(90f)
+            matrix.postRotate(rotate)
             bitmap = Bitmap.createBitmap(
                 bitmap,
                 0,
@@ -46,17 +66,9 @@ class RotationActivity : AppCompatActivity() {
                 matrix,
                 true
             )
-        }
-        btn_save.setOnClickListener{
             image_uri = bitmapToFile(bitmap!!)
             onBackPressed()
         }
-    }
-
-    override fun onBackPressed() {
-        sendDataBackToPreviousActivity()
-        super.onBackPressed()
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {
@@ -81,10 +93,13 @@ class RotationActivity : AppCompatActivity() {
         return Uri.parse(file.absolutePath)
     }
 
-    private fun sendDataBackToPreviousActivity() {
+
+    override fun onBackPressed() {
         var intent = Intent().apply {
             putExtra("uri", image_uri.toString())
         }
         setResult(Activity.RESULT_OK, intent)
+        super.onBackPressed()
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }

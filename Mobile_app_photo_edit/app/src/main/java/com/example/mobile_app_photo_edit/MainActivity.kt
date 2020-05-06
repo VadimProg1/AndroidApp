@@ -46,14 +46,15 @@ class MainActivity : AppCompatActivity() {
                             true
                         }
                         R.id.image_color_correction -> {
-                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT)
-                                    .show()
-                            true
-                        }
-                        R.id.image_filtres -> {
                             var intent = Intent(MainActivity@this, ColorFiltersActivity::class.java)
                             intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
                             startActivityForResult(intent, 222)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                            true
+                        }
+                        R.id.image_filtres -> {
+                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT)
+                                .show()
                             true
                         }
                         R.id.image_retouching -> {
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                 popupMenu.show()
             }
             else {
-                val toast = Toast.makeText(applicationContext, "Set Image!", Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(applicationContext, "Set Image", Toast.LENGTH_SHORT)
                 toast.setGravity(Gravity.CENTER, 0, 0)
                 toast.show()
             }
@@ -206,7 +207,9 @@ class MainActivity : AppCompatActivity() {
             return false
         }
         else {
-            Toast.makeText(applicationContext, "Choose image!", Toast.LENGTH_SHORT).show()
+            val toast = Toast.makeText(applicationContext, "Set image", Toast.LENGTH_SHORT)
+            toast.setGravity(Gravity.CENTER, 0, 0)
+            toast.show()
             return false
         }
     }
