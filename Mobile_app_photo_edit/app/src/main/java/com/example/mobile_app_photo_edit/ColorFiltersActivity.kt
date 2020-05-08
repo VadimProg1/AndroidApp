@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -12,10 +13,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_color_filtres.*
 import kotlinx.android.synthetic.main.activity_main.image_view
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
+import java.io.*
 import java.util.*
 
 class ColorFiltersActivity : AppCompatActivity() {
@@ -30,6 +28,12 @@ class ColorFiltersActivity : AppCompatActivity() {
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
+
+        val stream = ByteArrayOutputStream()
+        bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val byteArray = stream.toByteArray()
+        bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        image_view.setImageBitmap(bitmap)
 
         btn_blackwhite.setOnClickListener{
             BlackWhite()
@@ -58,11 +62,7 @@ class ColorFiltersActivity : AppCompatActivity() {
             }
         }
         bitmap = bmp_Copy
-        image_view.setImageBitmap(bitmap);
-    }
-
-    private fun Blur(){
-
+        image_view.setImageBitmap(bitmap)
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {

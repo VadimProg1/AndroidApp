@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -13,10 +14,7 @@ import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.image_view
 import kotlinx.android.synthetic.main.activity_rotation.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
+import java.io.*
 import java.util.*
 
 class RotationActivity : AppCompatActivity() {
@@ -24,17 +22,24 @@ class RotationActivity : AppCompatActivity() {
     var bitmap: Bitmap? = null
     var rotate: Float = 0f
     var image_uri: Uri? = null
+    var tempRotate: Float = 0f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rotation)
 
         image_uri = intent.getParcelableExtra(MainActivity.MY_MESSAGE_KEY)
-        image_vieww.setImageURI(image_uri)
-        val drawable = image_vieww.drawable as BitmapDrawable
+        image_view.setImageURI(image_uri)
+        val drawable = image_view.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
+        //val stream = ByteArrayOutputStream()
+       // bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+       // val byteArray = stream.toByteArray()
+       // bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        image_view.setImageBitmap(bitmap)
         seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                image_vieww.animate().rotation((progress.toFloat() - 45 + rotate))
+                image_view.animate().rotation((progress.toFloat() - 45 + rotate))
+                textView.text = (progress - 45).toString()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -43,18 +48,19 @@ class RotationActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 if (seekBar != null) {
-                   // rotate+= (seekBar.progress.toFloat() - 45)
+                    tempRotate+= (seekBar.progress.toFloat() - 45)
                 }
             }
 
         })
         btn_rotate.setOnClickListener{
-            rotate+= 90
-            image_vieww.animate().rotation(rotate)
+            rotate+= 90 + tempRotate
+            tempRotate = 0f
+            image_view.animate().rotation(rotate)
             seekBar.progress = 45
-
         }
         btn_save.setOnClickListener{
+            rotate+= tempRotate
             var matrix = Matrix()
             matrix.postRotate(rotate)
             bitmap = Bitmap.createBitmap(

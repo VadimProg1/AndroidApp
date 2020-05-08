@@ -58,8 +58,10 @@ class MainActivity : AppCompatActivity() {
                             true
                         }
                         R.id.image_retouching -> {
-                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT)
-                                    .show()
+                            var intent = Intent(MainActivity@this, RetouchingActivity::class.java)
+                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, 222)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_scaling -> {
@@ -68,8 +70,8 @@ class MainActivity : AppCompatActivity() {
                             true
                         }
                         R.id.image_segmentation -> {
-                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT)
-                                    .show()
+                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT).
+                            show()
                             true
                         }
                         R.id.image_unsharp_masking -> {
@@ -137,7 +139,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun pickImageFromGallery() {
-
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, 111)
