@@ -15,7 +15,7 @@
         android:adjustViewBounds="false"
         android:contentDescription="TODO"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/btn_rotate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
