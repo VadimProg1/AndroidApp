@@ -14,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_color_filtres.*
 import kotlinx.android.synthetic.main.activity_main.image_view
 import java.io.*
+import java.lang.Math.abs
 import java.util.*
+import kotlin.collections.ArrayList as ArrayList1
 
 class ColorFiltersActivity : AppCompatActivity() {
 
@@ -38,11 +40,66 @@ class ColorFiltersActivity : AppCompatActivity() {
         btn_blackwhite.setOnClickListener{
             BlackWhite()
         }
+
+        btn_filter1.setOnClickListener{
+            EmbossFilter()
+        }
+        btn_filter2.setOnClickListener{
+            SharpenFilter()
+        }
+
+        btn_filter3.setOnClickListener{
+            BlurFilter()
+        }
+
+        btn_filter4.setOnClickListener{
+            ContrastFilter()
+        }
         btn_save.setOnClickListener{
            image_uri = bitmapToFile(bitmap!!)
             onBackPressed()
         }
 
+    }
+
+    private fun ContrastFilter(){
+        val bmp_Copy: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
+        val coof = 1.6f
+        val bee = 10
+        for (Y in 0 until bitmap!!.height - 1) {
+            for (X in 0 until bitmap!!.width - 1) {
+                var pixelColor = bmp_Copy.getPixel(X, Y)
+                var pixelA = Color.alpha(pixelColor)
+                var pixelRed = Color.red(pixelColor)
+                var pixelBlue = Color.blue(pixelColor)
+                var pixelGreen = Color.green(pixelColor)
+                pixelRed = (coof * (pixelRed - 128) + 128 + bee).toInt()
+                pixelGreen = (coof * (pixelGreen - 128) + 128 + bee).toInt()
+                pixelBlue = (coof * (pixelBlue - 128) + 128 + bee).toInt()
+                if(pixelRed < 0){
+                    pixelRed = 0
+                }
+                if(pixelGreen < 0){
+                    pixelGreen = 0
+                }
+                if(pixelBlue < 0){
+                    pixelBlue = 0
+                }
+                if(pixelRed > 255){
+                    pixelRed = 255
+                }
+                if(pixelGreen > 255){
+                    pixelGreen = 255
+                }
+                if(pixelBlue > 255){
+                    pixelBlue = 255
+                }
+                val newPixel = Color.argb(pixelA, pixelRed, pixelGreen, pixelBlue)
+                bmp_Copy.setPixel(X, Y, newPixel)
+            }
+        }
+        image_view.setImageBitmap(bmp_Copy)
+        bitmap = bmp_Copy
     }
 
     private fun BlackWhite(){
@@ -65,6 +122,178 @@ class ColorFiltersActivity : AppCompatActivity() {
         image_view.setImageBitmap(bitmap)
     }
 
+    private fun EmbossFilter() {
+        val kernel = arrayOf(
+            intArrayOf(-2, -1, 0),
+            intArrayOf(-1, 1, 1),
+            intArrayOf(0, 1, 2)
+        )
+        val bmp_Copy: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
+        for(i in 0..1) {
+            for (Y in 1 until bitmap!!.height - 1) {
+                for (X in 1 until bitmap!!.width - 1) {
+                    var newPixelValueR = 0
+                    var newPixelValueG = 0
+                    var newPixelValueB = 0
+                    for (YK in -1..1) {
+                        for (XK in -1..1) {
+                            var pixelColor = bitmap!!.getPixel((X + XK), (Y + YK))
+                            val pixelValueR = (Color.red(pixelColor))
+                            val pixelValueG= (Color.green(pixelColor))
+                            val pixelValueB= (Color.blue(pixelColor))
+                            newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
+                            newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
+                            newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
+                        }
+                    }
+
+                    if(newPixelValueR < 0){
+                        newPixelValueR = 0
+                    }
+                    if(newPixelValueG < 0){
+                        newPixelValueG = 0
+                    }
+                    if(newPixelValueB < 0){
+                        newPixelValueB = 0
+                    }
+                    if(newPixelValueR > 255){
+                        newPixelValueR = 255
+                    }
+                    if(newPixelValueG > 255){
+                        newPixelValueG = 255
+                    }
+                    if(newPixelValueB > 255){
+                        newPixelValueB = 255
+                    }
+
+                    var pixelColor = bitmap!!.getPixel(X, Y)
+                    val pixelValueA = Color.alpha(pixelColor)
+                    val newPixel = Color.argb(
+                        pixelValueA,
+                        (newPixelValueR),
+                        (newPixelValueG),
+                        (newPixelValueB)
+                    )
+                    bmp_Copy.setPixel(X, Y, newPixel)
+                }
+            }
+        }
+        image_view.setImageBitmap(bmp_Copy)
+        bitmap = bmp_Copy
+    }
+
+    private fun SharpenFilter() {
+        val kernel = arrayOf(
+            intArrayOf(-1, -1, -1, -1, -1),
+            intArrayOf(-1,  2,  2,  2, -1),
+            intArrayOf(-1,  2,  8,  2, -1),
+            intArrayOf(-1,  2,  2,  2, -1),
+            intArrayOf(-1, -1, -1, -1, -1)
+        )
+        val bmp_Copy: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
+        for(i in 0..1) {
+            for (Y in 3 until bitmap!!.height - 3) {
+                for (X in 3 until bitmap!!.width - 3) {
+                    var newPixelValueR = 0
+                    var newPixelValueG = 0
+                    var newPixelValueB = 0
+                    for (YK in -1..3) {
+                        for (XK in -1..3) {
+                            var pixelColor = bitmap!!.getPixel((X + XK), (Y + YK))
+                            val pixelValueR = (Color.red(pixelColor))
+                            val pixelValueG= (Color.green(pixelColor))
+                            val pixelValueB= (Color.blue(pixelColor))
+                            newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
+                            newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
+                            newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
+                        }
+                    }
+
+                    newPixelValueR /= 8
+                    newPixelValueG /= 8
+                    newPixelValueB /= 8
+
+                    if(newPixelValueR < 0){
+                        newPixelValueR = 0
+                    }
+                    if(newPixelValueG < 0){
+                        newPixelValueG = 0
+                    }
+                    if(newPixelValueB < 0){
+                        newPixelValueB = 0
+                    }
+                    if(newPixelValueR > 255){
+                        newPixelValueR = 255
+                    }
+                    if(newPixelValueG > 255){
+                        newPixelValueG = 255
+                    }
+                    if(newPixelValueB > 255){
+                        newPixelValueB = 255
+                    }
+
+                    var pixelColor = bitmap!!.getPixel(X, Y)
+                    val pixelValueA = Color.alpha(pixelColor)
+                    val newPixel = Color.argb(
+                        pixelValueA,
+                        (newPixelValueR),
+                        (newPixelValueG),
+                        (newPixelValueB)
+                    )
+                    bmp_Copy.setPixel(X, Y, newPixel)
+                }
+            }
+        }
+        image_view.setImageBitmap(bmp_Copy)
+        bitmap = bmp_Copy
+    }
+
+    private fun BlurFilter(){
+        val kernel = arrayOf(
+            floatArrayOf(1f, 4f, 6f, 4f, 1f),
+            floatArrayOf(4f, 16f, 24f, 16f, 4f),
+            floatArrayOf(6f, 24f, 36f, 24f, 6f),
+            floatArrayOf(4f, 16f, 24f, 16f, 4f),
+            floatArrayOf(1f, 4f, 6f, 4f, 1f)
+        )
+        val bmp_Copy: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
+        for(i in 0..1) {
+            for (Y in 3 until bitmap!!.height - 3) {
+                for (X in 3 until bitmap!!.width - 3) {
+                    var newPixelValueR = 0f
+                    var newPixelValueG = 0f
+                    var newPixelValueB = 0f
+                    for (YK in -1..3) {
+                        for (XK in -1..3) {
+                            var pixelColor = bmp_Copy.getPixel((X + XK), (Y + YK))
+                            //val PixelPosition: Int = (Y + YK) * bitmap!!.width + (X + XK)
+                            val pixelValueA: Float = (Color.alpha(pixelColor)).toFloat()
+                            val pixelValueR: Float = (Color.red(pixelColor)).toFloat()
+                            val pixelValueG: Float = (Color.green(pixelColor)).toFloat()
+                            val pixelValueB: Float = (Color.blue(pixelColor)).toFloat()
+                            newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
+                            newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
+                            newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
+                        }
+                    }
+                    var pixelColor = bmp_Copy.getPixel(X, Y)
+                    var pixelA = Color.alpha(pixelColor)
+                    newPixelValueR /= 256
+                    newPixelValueG /= 256
+                    newPixelValueB /= 256
+                    val newPixel = Color.argb(
+                        pixelA,
+                        (newPixelValueR).toInt(),
+                        (newPixelValueG).toInt(),
+                        (newPixelValueB).toInt()
+                    )
+                    bmp_Copy.setPixel(X, Y, newPixel)
+                }
+            }
+        }
+        image_view.setImageBitmap(bmp_Copy)
+        bitmap = bmp_Copy
+    }
     private fun bitmapToFile(bitmap:Bitmap): Uri {
         // Get the context wrapper
         val wrapper = ContextWrapper(applicationContext)
@@ -97,3 +326,4 @@ class ColorFiltersActivity : AppCompatActivity() {
     }
 
 }
+

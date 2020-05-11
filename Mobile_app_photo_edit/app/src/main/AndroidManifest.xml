@@ -13,7 +13,9 @@
         android:roundIcon="@drawable/ic_avocaydo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RetouchingActivity"></activity>
+        <activity android:name=".huiActivity"></activity>
+        <activity android:name=".UnsharpMaskingActivity" />
+        <activity android:name=".RetouchingActivity" />
         <activity android:name=".ColorFiltersActivity" />
         <activity android:name=".RotationActivity" />
         <activity android:name=".MainActivity">

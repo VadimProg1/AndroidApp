@@ -43,6 +43,7 @@ class RetouchingActivity : AppCompatActivity() {
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
+
         resizeBitmap()
        // bitmap = Bitmap.createScaledBitmap(bitmap!!,  1800,
        //    1200, true);
@@ -66,8 +67,8 @@ class RetouchingActivity : AppCompatActivity() {
 
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    if(motionTouchEventX >= 100 && motionTouchEventX <= bitmap!!.width - 100
-                        && motionTouchEventY >= 100 && motionTouchEventY <= bitmap!!.height - 100) {
+                    if(motionTouchEventX >= 10 && motionTouchEventX <= bitmap!!.width - 10
+                        && motionTouchEventY >= 10 && motionTouchEventY <= bitmap!!.height - 10) {
                         retouching()
                     }
                 }
@@ -124,10 +125,10 @@ class RetouchingActivity : AppCompatActivity() {
         var pixelBlueAverage = pixelBlue / counter
         var pixelGreenAverage = pixelGreen / counter
 
-         yUP = (motionTouchEventY + 10).toInt()
-         yDOWN = (motionTouchEventY - 10).toInt()
-         xLeft = (motionTouchEventX - 10).toInt()
-         xRight = (motionTouchEventX + 10).toInt()
+        yUP = (motionTouchEventY + 10).toInt()
+        yDOWN = (motionTouchEventY - 10).toInt()
+        xLeft = (motionTouchEventX - 10).toInt()
+        xRight = (motionTouchEventX + 10).toInt()
 
 
         for (i in yDOWN..yUP - 1) {
@@ -140,46 +141,16 @@ class RetouchingActivity : AppCompatActivity() {
                 pixelRed += ((pixelRedAverage - pixelRed) * 0.18).toInt()
                 pixelBlue += ((pixelBlueAverage - pixelBlue) * 0.18).toInt()
                 pixelGreen += ((pixelGreenAverage - pixelGreen) * 0.18).toInt()
+
                 val newPixel = Color.argb(pixelAlpha, pixelRed, pixelGreen, pixelBlue)
                 bmp_Copy!!.setPixel(j, i, newPixel)
             }
         }
 
-
         bitmap = bmp_Copy
         image_view.setImageBitmap(bmp_Copy)
     }
-/*
-    private fun touchStart() {
 
-        currentX = motionTouchEventX
-        currentY = motionTouchEventY
-    }
-
-    private fun touchMove() {
-        val dx = abs(motionTouchEventX - currentX)
-        val dy = abs(motionTouchEventY - currentY)
-        retouching()
-    }
-
-    private fun touchUp() {
-        // Reset the path so it doesn't get drawn again.
-        //path.reset()
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        motionTouchEventX = event.x
-        motionTouchEventY = event.y
-
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> touchStart()
-            MotionEvent.ACTION_MOVE -> touchMove()
-            MotionEvent.ACTION_UP -> touchUp()
-        }
-        return true
-    }
-
- */
     private fun bitmapToFile(bitmap:Bitmap): Uri {
         // Get the context wrapper
         val wrapper = ContextWrapper(applicationContext)
