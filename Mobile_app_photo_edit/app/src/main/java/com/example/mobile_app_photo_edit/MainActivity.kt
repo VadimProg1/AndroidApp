@@ -69,13 +69,15 @@ class MainActivity : AppCompatActivity() {
                             show()
                             true
                         }
-                        R.id.image_segmentation -> {
-                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT).
-                            show()
-                            true
-                        }
                         R.id.image_unsharp_masking -> {
                             var intent = Intent(MainActivity@this, UnsharpMaskingActivity::class.java)
+                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, 222)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                            true
+                        }
+                        R.id.cube_3d -> {
+                            var intent = Intent(MainActivity@this, Cube3DActivity::class.java)
                             intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
                             startActivityForResult(intent, 222)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)

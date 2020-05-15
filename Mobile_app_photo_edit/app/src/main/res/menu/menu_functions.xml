@@ -14,10 +14,6 @@
         android:title="Scaling"
         android:icon="@drawable/ic_launcher_background"/>
     <item
-        android:id="@+id/image_segmentation"
-        android:title="Segmentation"
-        android:icon="@drawable/ic_launcher_background"/>
-    <item
         android:id="@+id/image_broken_lines"
         android:icon="@drawable/ic_launcher_background"
         android:title="Drawing broken lines" />
@@ -33,6 +29,10 @@
         android:id="@+id/image_filtres"
         android:icon="@drawable/ic_launcher_background"
         android:title="Filtrations" />
+    <item
+        android:id="@+id/cube_3d"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="3D cube" />
 
 
 </menu>

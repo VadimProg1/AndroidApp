@@ -10,9 +10,13 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_color_filtres.*
 import kotlinx.android.synthetic.main.activity_main.image_view
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.*
 import java.lang.Math.abs
 import java.util.*
@@ -38,28 +42,61 @@ class ColorFiltersActivity : AppCompatActivity() {
         image_view.setImageBitmap(bitmap)
 
         btn_blackwhite.setOnClickListener{
-            BlackWhite()
+            progressBar.visibility = VISIBLE
+            ProgressBarListener("baw")
+           // BlackWhite()
         }
 
         btn_filter1.setOnClickListener{
-            EmbossFilter()
+            progressBar.visibility = VISIBLE
+            ProgressBarListener("emboss")
+           // EmbossFilter()
         }
         btn_filter2.setOnClickListener{
-            SharpenFilter()
+            progressBar.visibility = VISIBLE
+            ProgressBarListener("sharpen")
+            //SharpenFilter()
         }
 
         btn_filter3.setOnClickListener{
-            BlurFilter()
+            progressBar.visibility = VISIBLE
+            ProgressBarListener("blur")
         }
 
         btn_filter4.setOnClickListener{
-            ContrastFilter()
+            progressBar.visibility = VISIBLE
+            ProgressBarListener("contrast")
+            //ContrastFilter()
         }
         btn_save.setOnClickListener{
            image_uri = bitmapToFile(bitmap!!)
             onBackPressed()
         }
 
+    }
+
+    private fun ProgressBarListener(code: String){
+        val future = doAsync {
+            if(code == "blur") {
+                BlurFilter()
+            }
+            else if(code == "contrast"){
+                ContrastFilter()
+            }
+            else if(code == "sharpen"){
+                SharpenFilter()
+            }
+            else if(code == "emboss"){
+                EmbossFilter()
+            }
+            else if(code == "baw"){
+                BlackWhite()
+            }
+            uiThread {
+                // use result here if you want to update ui
+                progressBar.visibility = INVISIBLE
+            }
+        }
     }
 
     private fun ContrastFilter(){
@@ -256,27 +293,32 @@ class ColorFiltersActivity : AppCompatActivity() {
             floatArrayOf(4f, 16f, 24f, 16f, 4f),
             floatArrayOf(1f, 4f, 6f, 4f, 1f)
         )
+        var newPixelValueR: Float
+        var newPixelValueG: Float
+        var newPixelValueB: Float
+        var pixelColor : Int
+        var pixelValueR: Float
+        var pixelValueG: Float
+        var pixelValueB: Float
         val bmp_Copy: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
         for(i in 0..1) {
             for (Y in 3 until bitmap!!.height - 3) {
                 for (X in 3 until bitmap!!.width - 3) {
-                    var newPixelValueR = 0f
-                    var newPixelValueG = 0f
-                    var newPixelValueB = 0f
+                    newPixelValueR = 0f
+                    newPixelValueG = 0f
+                    newPixelValueB = 0f
                     for (YK in -1..3) {
                         for (XK in -1..3) {
-                            var pixelColor = bmp_Copy.getPixel((X + XK), (Y + YK))
-                            //val PixelPosition: Int = (Y + YK) * bitmap!!.width + (X + XK)
-                            val pixelValueA: Float = (Color.alpha(pixelColor)).toFloat()
-                            val pixelValueR: Float = (Color.red(pixelColor)).toFloat()
-                            val pixelValueG: Float = (Color.green(pixelColor)).toFloat()
-                            val pixelValueB: Float = (Color.blue(pixelColor)).toFloat()
+                            pixelColor = bmp_Copy.getPixel((X + XK), (Y + YK))
+                            pixelValueR = (Color.red(pixelColor)).toFloat()
+                            pixelValueG = (Color.green(pixelColor)).toFloat()
+                            pixelValueB = (Color.blue(pixelColor)).toFloat()
                             newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
                             newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
                             newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
                         }
                     }
-                    var pixelColor = bmp_Copy.getPixel(X, Y)
+                    pixelColor = bmp_Copy.getPixel(X, Y)
                     var pixelA = Color.alpha(pixelColor)
                     newPixelValueR /= 256
                     newPixelValueG /= 256
