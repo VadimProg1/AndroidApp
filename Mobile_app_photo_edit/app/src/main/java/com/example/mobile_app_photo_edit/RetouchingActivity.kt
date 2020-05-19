@@ -24,6 +24,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 
 class RetouchingActivity : AppCompatActivity() {
@@ -31,10 +32,9 @@ class RetouchingActivity : AppCompatActivity() {
     var image_uri: Uri? = null
     var bitmap: Bitmap? = null
     var bmp_Copy: Bitmap? = null
-    private var motionTouchEventX = 0
-    private var motionTouchEventY = 0
-    private var currentX = 0f
-    private var currentY = 0f
+    private var motionTouchEventX = 0f
+    private var motionTouchEventY = 0f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_retouching)
@@ -44,12 +44,11 @@ class RetouchingActivity : AppCompatActivity() {
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
 
-        resizeBitmap()
        // bitmap = Bitmap.createScaledBitmap(bitmap!!,  1800,
        //    1200, true);
         bmp_Copy = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
-        image_view.layoutParams.height = bitmap!!.height
-        image_view.layoutParams.width = bitmap!!.width
+        //image_view.layoutParams.height = bitmap!!.height
+        //image_view.layoutParams.width = bitmap!!.width
         //bitmap = Bitmap.createScaledBitmap(bitmap!!, image_view.layoutParams.width, image_view.layoutParams.height, true)
         btn_save.setOnClickListener{
             image_uri = bitmapToFile(bitmap!!)
@@ -58,53 +57,36 @@ class RetouchingActivity : AppCompatActivity() {
 
         image_view.setOnTouchListener(OnTouchListener { v, event ->
             val action = event.action
-            motionTouchEventX  = event.x.toInt()
-            motionTouchEventY = event.y.toInt()
-            motionTouchEventY *= bitmap!!.height / image_view.height
-            motionTouchEventX *= bitmap!!.width / image_view.width
+            motionTouchEventX  = event.x
+            motionTouchEventY = event.y
+            motionTouchEventY *= bitmap!!.height.toFloat() / image_view.height.toFloat()
+            motionTouchEventX *= bitmap!!.width.toFloat() / image_view.width.toFloat()
+            //motionTouchEventY *= image_view.height.toFloat() / bitmap!!.height.toFloat()
+            //motionTouchEventX *= image_view.width.toFloat() / bitmap!!.width.toFloat()
             when (action) {
-                MotionEvent.ACTION_DOWN -> {
-
-                }
+                MotionEvent.ACTION_DOWN -> {}
                 MotionEvent.ACTION_MOVE -> {
-                    if(motionTouchEventX >= 10 && motionTouchEventX <= bitmap!!.width - 10
-                        && motionTouchEventY >= 10 && motionTouchEventY <= bitmap!!.height - 10) {
+                    if(motionTouchEventX >= 16 && motionTouchEventX <= bitmap!!.width - 16
+                        && motionTouchEventY >= 16 && motionTouchEventY <= bitmap!!.height - 16) {
                         retouching()
                     }
                 }
-                MotionEvent.ACTION_UP -> {
-
-                }
+                MotionEvent.ACTION_UP -> {}
             }
-
             true
         })
     }
 
-    private fun resizeBitmap()
-    {
-        var width: Float = (bitmap!!.width).toFloat()
-        var height: Float = (bitmap!!.height).toFloat()
-        var scale: Float = 1f
-        var coof:Float = (width / height).toFloat()
-        var reverseCoof:Float = (height / width).toFloat()
-        if(bitmap!!.height > bitmap!!.width){
-            height = bitmap!!.height * scale
-            width = bitmap!!.width * scale
-        }
-        else{
-            height = bitmap!!.height * scale
-            width = bitmap!!.width * scale
-        }
-        bitmap = Bitmap.createScaledBitmap(bitmap!!,  width.toInt(),
-            height.toInt(), false)
-    }
+
     private fun retouching(){
 
-        var yUP = (motionTouchEventY + 10).toInt()
-        var yDOWN = (motionTouchEventY - 10).toInt()
-        var xLeft = (motionTouchEventX - 10).toInt()
-        var xRight = (motionTouchEventX + 10).toInt()
+        var yUP = (motionTouchEventY + 21).toInt()
+        var yDOWN = (motionTouchEventY - 21).toInt()
+        var xLeft = (motionTouchEventX - 21).toInt()
+        var xRight = (motionTouchEventX + 21).toInt()
+        var xCenter = motionTouchEventX
+        var yCenter = motionTouchEventY
+
         var pixelColor = 0
         var pixelAlpha = 0
         var pixelRed = 0
@@ -124,26 +106,23 @@ class RetouchingActivity : AppCompatActivity() {
         var pixelRedAverage = pixelRed / counter
         var pixelBlueAverage = pixelBlue / counter
         var pixelGreenAverage = pixelGreen / counter
-
-        yUP = (motionTouchEventY + 10).toInt()
-        yDOWN = (motionTouchEventY - 10).toInt()
-        xLeft = (motionTouchEventX - 10).toInt()
-        xRight = (motionTouchEventX + 10).toInt()
-
-
+        var dist: Float
+        var coof = 0.2f
         for (i in yDOWN..yUP - 1) {
             for (j in xLeft..xRight - 1) {
+                dist = sqrt((xCenter - j) * (xCenter - j) + (yCenter - i) * (yCenter - i))
+                coof -= dist * 0.005f
                 pixelColor = bitmap!!.getPixel(j, i)
                 pixelAlpha = Color.alpha(pixelColor)
                 pixelRed = Color.red(pixelColor)
                 pixelBlue = Color.blue(pixelColor)
                 pixelGreen = Color.green(pixelColor)
-                pixelRed += ((pixelRedAverage - pixelRed) * 0.18).toInt()
-                pixelBlue += ((pixelBlueAverage - pixelBlue) * 0.18).toInt()
-                pixelGreen += ((pixelGreenAverage - pixelGreen) * 0.18).toInt()
-
+                pixelRed += ((pixelRedAverage - pixelRed) * coof).toInt()
+                pixelBlue += ((pixelBlueAverage - pixelBlue) * coof).toInt()
+                pixelGreen += ((pixelGreenAverage - pixelGreen) * coof).toInt()
                 val newPixel = Color.argb(pixelAlpha, pixelRed, pixelGreen, pixelBlue)
                 bmp_Copy!!.setPixel(j, i, newPixel)
+                coof = 0.22f
             }
         }
 

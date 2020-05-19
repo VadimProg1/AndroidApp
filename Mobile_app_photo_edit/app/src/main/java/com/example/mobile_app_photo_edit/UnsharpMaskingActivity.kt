@@ -1,6 +1,5 @@
 package com.example.mobile_app_photo_edit
 
-import android.R.color
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -11,25 +10,28 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.view.View.VISIBLE
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.createBitmap
 import kotlinx.android.synthetic.main.activity_color_filtres.*
 import kotlinx.android.synthetic.main.activity_color_filtres.btn_save
 import kotlinx.android.synthetic.main.activity_main.image_view
 import kotlinx.android.synthetic.main.activity_unsharp_masking.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.lang.Math.abs
 import java.util.*
 
 
 class UnsharpMaskingActivity : AppCompatActivity() {
 
-    var image_uri: Uri? = null
+    private var image_uri: Uri? = null
     var bitmap: Bitmap? = null
+    private var bitmapUnsharpMask: Bitmap? = null
+    private var bitmapContrast: Bitmap? = null
+    private var bmpCopy: Bitmap? = null
     val sharpenForce = 1f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +42,20 @@ class UnsharpMaskingActivity : AppCompatActivity() {
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
 
+        val bitmapArray = IntArray(bitmap!!.height * bitmap!!.width)
+        bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
+
         btn_unsharpMasking.setOnClickListener{
-            unsharpMaskingFilter()
+            progressBar1.visibility = View.VISIBLE
+            val future = doAsync {
+                contrastFilter(bitmapArray)
+                bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
+                unsharpMaskingFilter(bitmapArray)
+                uiThread {
+                    // use result here if you want to update ui
+                    progressBar1.visibility = View.INVISIBLE
+                }
+            }
         }
         btn_save.setOnClickListener{
             image_uri = bitmapToFile(bitmap!!)
@@ -49,7 +63,8 @@ class UnsharpMaskingActivity : AppCompatActivity() {
         }
     }
 
-    private fun unsharpMaskingFilter() {
+    private fun unsharpMaskingFilter(bitmapArray: IntArray) {
+
         val kernel = arrayOf(
             floatArrayOf(1f, 4f, 6f, 4f, 1f),
             floatArrayOf(4f, 16f, 24f, 16f, 4f),
@@ -57,67 +72,107 @@ class UnsharpMaskingActivity : AppCompatActivity() {
             floatArrayOf(4f, 16f, 24f, 16f, 4f),
             floatArrayOf(1f, 4f, 6f, 4f, 1f)
         )
-        val bmp_Copy: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
-        for(i in 0..2) {
+        var newBitmapArrayy = bitmapArray
+        var contrastBitmapArray = IntArray(bitmap!!.height * bitmap!!.width)
+        bitmapContrast!!.getPixels(contrastBitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
+        var newPixelValueA = 0f
+        var newPixelValueR = 0f
+        var newPixelValueG = 0f
+        var newPixelValueB = 0f
+        var pixelColor: Int
+        var pixelValueA: Float
+        var pixelValueR: Float
+        var pixelValueG: Float
+        var pixelValueB: Float
+        var newPixel: Int
+        for(i in 0..1) {
             for (Y in 3 until bitmap!!.height - 3) {
                 for (X in 3 until bitmap!!.width - 3) {
-                    var newPixelValueA = 0f
-                    var newPixelValueR = 0f
-                    var newPixelValueG = 0f
-                    var newPixelValueB = 0f
+                    newPixelValueA = 0f
+                    newPixelValueR = 0f
+                    newPixelValueG = 0f
+                    newPixelValueB = 0f
                     for (YK in -1..3) {
                         for (XK in -1..3) {
-                            var pixelColor = bmp_Copy.getPixel((X + XK), (Y + YK))
-                            //val PixelPosition: Int = (Y + YK) * bitmap!!.width + (X + XK)
-                            val pixelValueA: Float = (Color.alpha(pixelColor)).toFloat()
-                            val pixelValueR: Float = (Color.red(pixelColor)).toFloat()
-                            val pixelValueG: Float = (Color.green(pixelColor)).toFloat()
-                            val pixelValueB: Float = (Color.blue(pixelColor)).toFloat()
+                            pixelColor = bitmapArray[(Y + YK) * bitmap!!.width + (X + XK)]
+                            pixelValueA = (Color.alpha(pixelColor)).toFloat()
+                            pixelValueR = (Color.red(pixelColor)).toFloat()
+                            pixelValueG = (Color.green(pixelColor)).toFloat()
+                            pixelValueB= (Color.blue(pixelColor)).toFloat()
                             newPixelValueA += kernel[YK + 1][XK + 1] * pixelValueA
                             newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
                             newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
                             newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
                         }
                     }
-                    var pixelColor = bmp_Copy.getPixel(X, Y)
-                    var oldPixelR = (Color.red(pixelColor)).toFloat()
-                    var oldPixelG = (Color.green(pixelColor)).toFloat()
-                    var oldPixelB = (Color.blue(pixelColor)).toFloat()
                     newPixelValueR /= 256
                     newPixelValueG /= 256
                     newPixelValueB /= 256
-                    //newPixelValueR = kotlin.math.abs(newPixelValueR - oldPixelR)
-                     //newPixelValueG = kotlin.math.abs(newPixelValueG - oldPixelG)
-                     //newPixelValueB = kotlin.math.abs(newPixelValueB - oldPixelB)
-                    val newPixel = Color.argb(
-                        255,
-                        (newPixelValueR).toInt(),
-                        (newPixelValueG).toInt(),
-                        (newPixelValueB).toInt()
-                    )
-                    bmp_Copy.setPixel(X, Y, newPixel)
+
+                    pixelColor = bitmapArray[Y * bitmap!!.width + X]
+                    var oldPixelR = (Color.red(pixelColor)).toFloat()
+                    var oldPixelG = (Color.green(pixelColor)).toFloat()
+                    var oldPixelB = (Color.blue(pixelColor)).toFloat()
+                    newPixelValueR = kotlin.math.abs(newPixelValueR - oldPixelR)
+                    newPixelValueG = kotlin.math.abs(newPixelValueG - oldPixelG)
+                    newPixelValueB = kotlin.math.abs(newPixelValueB - oldPixelB)
+                    if((newPixelValueR + newPixelValueG + newPixelValueB) >= 30){
+                        var contrastPixelColor = contrastBitmapArray[Y * bitmap!!.width + X]
+                        newPixelValueR = Color.red(contrastPixelColor).toFloat()
+                        newPixelValueB = Color.blue(contrastPixelColor).toFloat()
+                        newPixelValueG = Color.green(contrastPixelColor).toFloat()
+                        newPixel = Color.argb(
+                            255,
+                            (newPixelValueR).toInt(),
+                            (newPixelValueG).toInt(),
+                            (newPixelValueB).toInt()
+                        )
+                        newBitmapArrayy[Y * bitmap!!.width + X] = newPixel
+                    }
                 }
             }
         }
-        for (Y in 1 until bitmap!!.height - 1) {
-            for (X in 1 until bitmap!!.width - 1) {
-                var newPixelColor = bmp_Copy.getPixel(X, Y)
-                var newPixelValueR = (Color.red(newPixelColor)).toFloat()
-                var newPixelValueG =(Color.green(newPixelColor)).toFloat()
-                var newPixelValueB = (Color.blue(newPixelColor)).toFloat()
-                var pixelColor = bitmap!!.getPixel(X, Y)
-                var oldPixelR = (Color.red(pixelColor)).toFloat()
-                var oldPixelG = (Color.green(pixelColor)).toFloat()
-                var oldPixelB = (Color.blue(pixelColor)).toFloat()
-                newPixelValueR = kotlin.math.abs(newPixelValueR - oldPixelR)
-                newPixelValueG = kotlin.math.abs(newPixelValueG - oldPixelG)
-                newPixelValueB = kotlin.math.abs(newPixelValueB - oldPixelB)
-                val newPixel = Color.argb(255, (newPixelValueR).toInt(), (newPixelValueG).toInt(), (newPixelValueB).toInt())
-                bmp_Copy.setPixel(X, Y, newPixel)
+        bitmap = Bitmap.createBitmap(newBitmapArrayy, bitmap!!.width, bitmap!!.height, Bitmap.Config.ARGB_8888)
+        image_view.setImageBitmap(bitmap)
+    }
+
+    private fun contrastFilter(bitmapArray: IntArray){
+        var newBitmapArray = bitmapArray
+        val coof = 1.6f
+        val bee = 10
+        for (Y in 0 until bitmap!!.height - 1) {
+            for (X in 0 until bitmap!!.width - 1) {
+                var pixelColor = bitmapArray[Y * bitmap!!.width + X]
+                var pixelA = Color.alpha(pixelColor)
+                var pixelRed = Color.red(pixelColor)
+                var pixelBlue = Color.blue(pixelColor)
+                var pixelGreen = Color.green(pixelColor)
+                pixelRed = (coof * (pixelRed - 128) + 128 + bee).toInt()
+                pixelGreen = (coof * (pixelGreen - 128) + 128 + bee).toInt()
+                pixelBlue = (coof * (pixelBlue - 128) + 128 + bee).toInt()
+                if(pixelRed < 0){
+                    pixelRed = 0
+                }
+                if(pixelGreen < 0){
+                    pixelGreen = 0
+                }
+                if(pixelBlue < 0){
+                    pixelBlue = 0
+                }
+                if(pixelRed > 255){
+                    pixelRed = 255
+                }
+                if(pixelGreen > 255){
+                    pixelGreen = 255
+                }
+                if(pixelBlue > 255){
+                    pixelBlue = 255
+                }
+                val newPixel = Color.argb(pixelA, pixelRed, pixelGreen, pixelBlue)
+                newBitmapArray[Y * bitmap!!.width + X] = newPixel
             }
         }
-        image_view.setImageBitmap(bmp_Copy)
-        bitmap = bmp_Copy
+        bitmapContrast = Bitmap.createBitmap(newBitmapArray, bitmap!!.width, bitmap!!.height, Bitmap.Config.ARGB_8888)
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {

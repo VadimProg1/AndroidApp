@@ -6,7 +6,7 @@ import android.widget.SeekBar
 import kotlinx.android.synthetic.main.activity_cube3_d.*
 
 var s: MutableList<Square> = ArrayList()
-var nums: MutableList<Numbers> = ArrayList()
+var nums: MutableList<MutableList<Vertex>> = ArrayList()
 
 class Cube3DActivity : AppCompatActivity() {
 
@@ -33,14 +33,10 @@ class Cube3DActivity : AppCompatActivity() {
                     s[i].v3 = transform.transform(s[i].v3)
                     s[i].v4 = transform.transform(s[i].v4)
                     s[i].centre = transform.transform(s[i].centre)
+                    for(j in 0 until nums[i].size) {
+                        nums[i][j] = transform.transform(nums[i][j])
+                    }
                 }
-                nums[0].v1 = transform.transform(nums[0].v1)
-                nums[0].v2 = transform.transform(nums[0].v2)
-                nums[0].v3 = transform.transform(nums[0].v3)
-                nums[0].v4 = transform.transform(nums[0].v4)
-                nums[0].v5 = transform.transform(nums[0].v5)
-                nums[0].v6 = transform.transform(nums[0].v6)
-
                 canv.draw()
                 prevRZ = seekBar.progress
             }
@@ -65,13 +61,10 @@ class Cube3DActivity : AppCompatActivity() {
                     s[i].v3 = transform.transform(s[i].v3)
                     s[i].v4 = transform.transform(s[i].v4)
                     s[i].centre = transform.transform(s[i].centre)
+                    for(j in 0 until nums[i].size) {
+                        nums[i][j] = transform.transform(nums[i][j])
+                    }
                 }
-                nums[0].v1 = transform.transform(nums[0].v1)
-                nums[0].v2 = transform.transform(nums[0].v2)
-                nums[0].v3 = transform.transform(nums[0].v3)
-                nums[0].v4 = transform.transform(nums[0].v4)
-                nums[0].v5 = transform.transform(nums[0].v5)
-                nums[0].v6 = transform.transform(nums[0].v6)
                 canv.draw()
                 prevRY = seekBar.progress
             }
@@ -96,13 +89,10 @@ class Cube3DActivity : AppCompatActivity() {
                     s[i].v3 = transform.transform(s[i].v3)
                     s[i].v4 = transform.transform(s[i].v4)
                     s[i].centre = transform.transform(s[i].centre)
+                    for(j in 0 until nums[i].size) {
+                        nums[i][j] = transform.transform(nums[i][j])
+                    }
                 }
-                nums[0].v1 = transform.transform(nums[0].v1)
-                nums[0].v2 = transform.transform(nums[0].v2)
-                nums[0].v3 = transform.transform(nums[0].v3)
-                nums[0].v4 = transform.transform(nums[0].v4)
-                nums[0].v5 = transform.transform(nums[0].v5)
-                nums[0].v6 = transform.transform(nums[0].v6)
                 canv.draw()
                 prevRX = seekBar.progress
             }
@@ -111,6 +101,7 @@ class Cube3DActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
+
 }
 
 class Vertex(var x: Float, var y: Float, var z: Float)
@@ -121,15 +112,6 @@ class Square(
     var v3: Vertex,
     var v4: Vertex,
     var centre: Vertex
-)
-
-class Numbers(
-    var v1: Vertex,
-    var v2: Vertex,
-    var v3: Vertex,
-    var v4: Vertex,
-    var v5: Vertex,
-    var v6: Vertex
 )
 
 class Matrix3(var values: DoubleArray) {

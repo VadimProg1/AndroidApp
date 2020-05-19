@@ -10,18 +10,15 @@
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:layout_marginBottom="62dp"
-        android:adjustViewBounds="false"
-        android:contentDescription="TODO"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/btn_blackwhite"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/btn_save"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.503"
         app:srcCompat="?attr/selectableItemBackground" />
 
     <Button

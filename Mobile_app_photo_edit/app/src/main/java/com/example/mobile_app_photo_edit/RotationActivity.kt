@@ -32,9 +32,9 @@ class RotationActivity : AppCompatActivity() {
         val drawable = image_view.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
         //val stream = ByteArrayOutputStream()
-       // bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-       // val byteArray = stream.toByteArray()
-       // bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        //bitmap.compress(Bitmap.CompressFormat.JPEG, 10, stream)
+        //val byteArray = stream.toByteArray()
+        //bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         //image_view.setImageBitmap(bitmap)
         seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
