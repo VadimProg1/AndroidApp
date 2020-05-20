@@ -13,7 +13,8 @@
         android:roundIcon="@drawable/ic_avocaydo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AffineTransformationsActivity"></activity>
+        <activity android:name=".SplineInterpolationActivity"></activity>
+        <activity android:name=".AffineTransformationsActivity" />
         <activity android:name=".Cube3DActivity" />
         <activity android:name=".UnsharpMaskingActivity" />
         <activity android:name=".RetouchingActivity" />
