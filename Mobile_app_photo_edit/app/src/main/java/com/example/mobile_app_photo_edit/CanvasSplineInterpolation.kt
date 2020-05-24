@@ -54,24 +54,24 @@ class CanvasSplineInterpolation : View {
     )
 
     override fun onDraw(canvas: Canvas) {
-        if(counterOfDots == 1 && drawSpline == false){
+        if(counterOfDots == 1 && !drawSpline){
             canvas.drawPoint(dotX, dotY, paint)
             path.moveTo(dotX, dotY)
         }
-        else if(drawSpline == false){
+        else if(!drawSpline){
             path.lineTo(dotX, dotY)
             canvas.drawPath(path, paint)
         }
-        else if (drawSpline == true){
+        else if (drawSpline){
+            pathN.moveTo(dott[0].x, dott[0].y)
             for(i in 0.. dott.size - 2) {
                 dotX = dott[i].x
                 dotY = dott[i].y
                 dotXN = dott[i + 1].x
                 dotYN = dott[i + 1].y
-                pathN.moveTo(dotX, dotY)
                 var oldX = dotX
                 pathDot.moveTo(dotX, dotY)
-                pathDot.lineTo(dotX + 1, dotY + 1)
+                pathDot.lineTo(dotX, dotY)
                 canvas.drawPath(pathDot, paintDot)
                 if(dotX < dotXN) {
                     while (dotX <= dotXN) {

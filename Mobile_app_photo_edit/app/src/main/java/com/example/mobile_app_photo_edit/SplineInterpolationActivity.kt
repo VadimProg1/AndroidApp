@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.INVISIBLE
 import kotlinx.android.synthetic.main.activity_spline_interpolation.*
 import kotlin.math.nextDown
 import kotlin.math.sqrt
@@ -23,6 +24,7 @@ class SplineInterpolationActivity : AppCompatActivity() {
     lateinit var b: FloatArray
     lateinit var c: FloatArray
     lateinit var d: FloatArray
+    var indexNewDot: Int = 0
     var check = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,13 +42,18 @@ class SplineInterpolationActivity : AppCompatActivity() {
                     }
                     if(changingSpline){
                         check = checkNewDot(motionTouchEventX, motionTouchEventY)
+                        if(check){
+                            indexNewDot = findIndexNewDot(motionTouchEventX, motionTouchEventY)
+                        }
                     }
                 }
                 MotionEvent.ACTION_MOVE -> {
                     if(changingSpline){
                         if(check) {
                             //findNewDot(motionTouchEventX, motionTouchEventY)
-                            checkNewDot(motionTouchEventX, motionTouchEventY)
+                            //checkNewDot(motionTouchEventX, motionTouchEventY)
+                            dott[indexNewDot].x = motionTouchEventX
+                            dott[indexNewDot].y = motionTouchEventY
                             canvasSpline.pathN.reset()
                             canvasSpline.pathDot.reset()
                             interpolation()
@@ -61,6 +68,7 @@ class SplineInterpolationActivity : AppCompatActivity() {
         })
 
         btn_interpolation.setOnClickListener{
+            btn_interpolation.visibility = INVISIBLE
             interpolation()
         }
     }
@@ -70,12 +78,23 @@ class SplineInterpolationActivity : AppCompatActivity() {
             var startX = dott[i].x
             var startY = dott[i].y
             if(sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY)) < 100){
-                dott[i].x = x
-                dott[i].y = y
                 return true
             }
         }
         return false
+    }
+
+    private fun findIndexNewDot(x: Float, y: Float): Int{
+        var indexDot: Int = 0
+        for(i in 0.. dott.size - 1) {
+            var startX = dott[i].x
+            var startY = dott[i].y
+            if(sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY)) < 100){
+                indexDot = i
+                break
+            }
+        }
+        return indexDot
     }
 
     private fun interpolation(){

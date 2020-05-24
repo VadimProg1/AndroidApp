@@ -69,8 +69,10 @@ class MainActivity : AppCompatActivity() {
                             true
                         }
                         R.id.image_scaling -> {
-                            Toast.makeText(applicationContext, "Work in progress!", Toast.LENGTH_SHORT).
-                            show()
+                            var intent = Intent(MainActivity@this, ScalingActivity::class.java)
+                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, 222)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_unsharp_masking -> {

@@ -66,8 +66,8 @@ class RetouchingActivity : AppCompatActivity() {
             when (action) {
                 MotionEvent.ACTION_DOWN -> {}
                 MotionEvent.ACTION_MOVE -> {
-                    if(motionTouchEventX >= 16 && motionTouchEventX <= bitmap!!.width - 16
-                        && motionTouchEventY >= 16 && motionTouchEventY <= bitmap!!.height - 16) {
+                    if(motionTouchEventX >= 21 && motionTouchEventX <= bitmap!!.width - 21
+                        && motionTouchEventY >= 21 && motionTouchEventY <= bitmap!!.height - 21) {
                         retouching()
                     }
                 }

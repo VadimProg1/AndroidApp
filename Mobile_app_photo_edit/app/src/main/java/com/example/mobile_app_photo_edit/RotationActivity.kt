@@ -12,10 +12,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.scale
 import kotlinx.android.synthetic.main.activity_main.image_view
 import kotlinx.android.synthetic.main.activity_rotation.*
 import java.io.*
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class RotationActivity : AppCompatActivity() {
 
@@ -23,6 +27,7 @@ class RotationActivity : AppCompatActivity() {
     var rotate: Float = 0f
     var image_uri: Uri? = null
     var tempRotate: Float = 0f
+    var scaleCoof: Float = 1f
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rotation)
@@ -31,14 +36,15 @@ class RotationActivity : AppCompatActivity() {
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
-        //val stream = ByteArrayOutputStream()
-        //bitmap.compress(Bitmap.CompressFormat.JPEG, 10, stream)
-        //val byteArray = stream.toByteArray()
-        //bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-        //image_view.setImageBitmap(bitmap)
+
+        var diag: Float = sqrt((bitmap.height * bitmap.height + bitmap.width * bitmap.width).toFloat())
+        var coof = (diag / (bitmap.height + bitmap.width)) / 45
+
         seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 image_view.animate().rotation((progress.toFloat() - 45 + rotate))
+                image_view.animate().scaleX(abs(progress.toFloat() - 45) * coof + 1)
+                image_view.animate().scaleY(abs(progress.toFloat() - 45) * coof + 1)
                 textView.text = (progress - 45).toString()
             }
 
@@ -49,6 +55,7 @@ class RotationActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 if (seekBar != null) {
                     tempRotate+= (seekBar.progress.toFloat() - 45)
+                    scaleCoof = (abs(seekBar.progress.toFloat() - 45)) * coof + 1
                 }
             }
 
@@ -62,6 +69,8 @@ class RotationActivity : AppCompatActivity() {
         btn_save.setOnClickListener{
             rotate+= tempRotate
             var matrix = Matrix()
+            var oldHeight = bitmap.height
+            var oldWidth = bitmap.width
             matrix.postRotate(rotate)
             bitmap = Bitmap.createBitmap(
                 bitmap,
@@ -72,11 +81,39 @@ class RotationActivity : AppCompatActivity() {
                 matrix,
                 true
             )
+            if(rotate != 0f){
+                var bmp_Copy = bitmap
+                bitmap = scaling(bmp_Copy, oldHeight, oldWidth)
+            }
             image_uri = bitmapToFile(bitmap!!)
+            rotate = 0f
+            scaleCoof = 1f
+            tempRotate = 0f
             onBackPressed()
         }
     }
 
+    private fun scaling(bmp_Copy: Bitmap, oldHeight: Int, oldWidth: Int): Bitmap{
+        var newHeight: Int = (oldHeight / scaleCoof).roundToInt()
+        var newWidth: Int = (oldWidth / scaleCoof).roundToInt()
+        var bitmapArray = IntArray(bmp_Copy.height * bmp_Copy.width)
+        var newBitmapArray: MutableList<Int> = ArrayList()
+        bmp_Copy.getPixels(bitmapArray, 0, bmp_Copy.width, 0, 0, bmp_Copy.width, bmp_Copy.height)
+        if(scaleCoof > 1){
+            var indentX = (bmp_Copy.width - newWidth) / 2
+            var indentY = (bmp_Copy.height - newHeight) / 2
+            newHeight = bmp_Copy.height - (indentY * 2)
+            newWidth = bmp_Copy.width - (indentX * 2)
+            var indexCounter = 0
+            for(Y in indentY..(bmp_Copy.height - indentY) - 1){
+                for(X in indentX..(bmp_Copy.width - indentX) - 1){
+                    newBitmapArray.add(bitmapArray[Y * bmp_Copy.width + X])
+                    indexCounter++
+                }
+            }
+        }
+        return Bitmap.createBitmap(newBitmapArray.toIntArray(),newWidth, newHeight, Bitmap.Config.ARGB_8888)
+    }
     private fun bitmapToFile(bitmap:Bitmap): Uri {
         // Get the context wrapper
         val wrapper = ContextWrapper(applicationContext)
