@@ -13,15 +13,13 @@ class Canvas3DCube : View {
     private var mWidth = 0
     private var mHeight = 0
     val paint = Paint().apply {
-        color = Color.BLACK
-        // Smooths out edges of what is drawn without affecting shape.
+        color = Color.WHITE
         isAntiAlias = true
-        // Dithering affects how colors with higher-precision than the device are down-sampled.
         isDither = true
-        style = Paint.Style.STROKE // default: FILL
-        strokeJoin = Paint.Join.ROUND // default: MITER
-        strokeCap = Paint.Cap.ROUND // default: BUTT
-        strokeWidth = 12f // default: Hairline-width (really thin)
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 12f
     }
 
     constructor(context: Context?) : super(context) {}
@@ -189,7 +187,8 @@ class Canvas3DCube : View {
             initNums()
         }
 
-        var d = mWidth / 2
+        var d = mWidth
+        canvas.scale(0.5f, 0.5f)
 
         for(i in 0 until s.size) {
             if(s[i].centre.z < 0) {

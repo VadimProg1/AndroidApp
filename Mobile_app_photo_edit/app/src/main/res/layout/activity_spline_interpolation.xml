@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#363739"
     tools:context=".SplineInterpolationActivity">
 
     <com.example.mobile_app_photo_edit.CanvasSplineInterpolation

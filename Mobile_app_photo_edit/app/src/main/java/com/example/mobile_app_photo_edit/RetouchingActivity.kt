@@ -39,17 +39,12 @@ class RetouchingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_retouching)
 
-        image_uri = intent.getParcelableExtra(MainActivity.MY_MESSAGE_KEY)
+        image_uri = intent.getParcelableExtra(MainActivity.ACTIVITIES_MESSAGE_KEY)
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
 
-       // bitmap = Bitmap.createScaledBitmap(bitmap!!,  1800,
-       //    1200, true);
         bmp_Copy = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
-        //image_view.layoutParams.height = bitmap!!.height
-        //image_view.layoutParams.width = bitmap!!.width
-        //bitmap = Bitmap.createScaledBitmap(bitmap!!, image_view.layoutParams.width, image_view.layoutParams.height, true)
         btn_save.setOnClickListener{
             image_uri = bitmapToFile(bitmap!!)
             onBackPressed()
@@ -61,13 +56,12 @@ class RetouchingActivity : AppCompatActivity() {
             motionTouchEventY = event.y
             motionTouchEventY *= bitmap!!.height.toFloat() / image_view.height.toFloat()
             motionTouchEventX *= bitmap!!.width.toFloat() / image_view.width.toFloat()
-            //motionTouchEventY *= image_view.height.toFloat() / bitmap!!.height.toFloat()
-            //motionTouchEventX *= image_view.width.toFloat() / bitmap!!.width.toFloat()
             when (action) {
                 MotionEvent.ACTION_DOWN -> {}
                 MotionEvent.ACTION_MOVE -> {
-                    if(motionTouchEventX >= 21 && motionTouchEventX <= bitmap!!.width - 21
-                        && motionTouchEventY >= 21 && motionTouchEventY <= bitmap!!.height - 21) {
+                    if (motionTouchEventX >= 31 && motionTouchEventX <= bitmap!!.width - 31
+                        && motionTouchEventY >= 31 && motionTouchEventY <= bitmap!!.height - 31
+                    ) {
                         retouching()
                     }
                 }
@@ -80,10 +74,10 @@ class RetouchingActivity : AppCompatActivity() {
 
     private fun retouching(){
 
-        var yUP = (motionTouchEventY + 21).toInt()
-        var yDOWN = (motionTouchEventY - 21).toInt()
-        var xLeft = (motionTouchEventX - 21).toInt()
-        var xRight = (motionTouchEventX + 21).toInt()
+        var yUP = (motionTouchEventY + 31).toInt()
+        var yDOWN = (motionTouchEventY - 31).toInt()
+        var xLeft = (motionTouchEventX - 31).toInt()
+        var xRight = (motionTouchEventX + 31).toInt()
         var xCenter = motionTouchEventX
         var yCenter = motionTouchEventY
 
@@ -107,22 +101,27 @@ class RetouchingActivity : AppCompatActivity() {
         var pixelBlueAverage = pixelBlue / counter
         var pixelGreenAverage = pixelGreen / counter
         var dist: Float
-        var coof = 0.2f
+        var coof = 0.26f
+        var localCoof = coof
         for (i in yDOWN..yUP - 1) {
             for (j in xLeft..xRight - 1) {
+                localCoof = coof
                 dist = sqrt((xCenter - j) * (xCenter - j) + (yCenter - i) * (yCenter - i))
-                coof -= dist * 0.005f
+                if(localCoof - (dist * 0.007f) > 0) {
+                    localCoof -= dist * 0.007f
+                }
+                else
+                    localCoof = 0f
                 pixelColor = bitmap!!.getPixel(j, i)
                 pixelAlpha = Color.alpha(pixelColor)
                 pixelRed = Color.red(pixelColor)
                 pixelBlue = Color.blue(pixelColor)
                 pixelGreen = Color.green(pixelColor)
-                pixelRed += ((pixelRedAverage - pixelRed) * coof).toInt()
-                pixelBlue += ((pixelBlueAverage - pixelBlue) * coof).toInt()
-                pixelGreen += ((pixelGreenAverage - pixelGreen) * coof).toInt()
+                pixelRed += ((pixelRedAverage - pixelRed) * localCoof).toInt()
+                pixelBlue += ((pixelBlueAverage - pixelBlue) * localCoof).toInt()
+                pixelGreen += ((pixelGreenAverage - pixelGreen) * localCoof).toInt()
                 val newPixel = Color.argb(pixelAlpha, pixelRed, pixelGreen, pixelBlue)
                 bmp_Copy!!.setPixel(j, i, newPixel)
-                coof = 0.22f
             }
         }
 
@@ -131,15 +130,12 @@ class RetouchingActivity : AppCompatActivity() {
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {
-        // Get the context wrapper
         val wrapper = ContextWrapper(applicationContext)
 
-        // Initialize a new file instance to save bitmap object
         var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
         file = File(file,"${UUID.randomUUID()}.jpg")
 
         try{
-            // Compress the bitmap and save in jpg format
             val stream: OutputStream = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
             stream.flush()
@@ -148,7 +144,6 @@ class RetouchingActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        // Return the saved bitmap uri
         return Uri.parse(file.absolutePath)
     }
 

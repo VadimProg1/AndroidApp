@@ -13,21 +13,14 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.SeekBar
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_affine_transformations.*
-import kotlinx.android.synthetic.main.activity_color_filtres.*
 import kotlinx.android.synthetic.main.activity_color_filtres.btn_save
 import kotlinx.android.synthetic.main.activity_color_filtres.image_view
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_rotation.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
-import java.util.Collections.copy
-import kotlin.math.abs
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 class ScalingActivity : AppCompatActivity() {
 
@@ -39,7 +32,7 @@ class ScalingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scaling)
 
-        image_uri = intent.getParcelableExtra(MainActivity.MY_MESSAGE_KEY)
+        image_uri = intent.getParcelableExtra(MainActivity.ACTIVITIES_MESSAGE_KEY)
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap

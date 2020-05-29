@@ -10,7 +10,9 @@ import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.scale
 import kotlinx.android.synthetic.main.activity_main.image_view
@@ -32,13 +34,13 @@ class RotationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rotation)
 
-        image_uri = intent.getParcelableExtra(MainActivity.MY_MESSAGE_KEY)
+        image_uri = intent.getParcelableExtra(MainActivity.ACTIVITIES_MESSAGE_KEY)
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
 
         var diag: Float = sqrt((bitmap.height * bitmap.height + bitmap.width * bitmap.width).toFloat())
-        var coof = (diag / (bitmap.height + bitmap.width)) / 45
+        var coof = (diag / (bitmap.height + bitmap.width)) / 35
 
         seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -54,17 +56,30 @@ class RotationActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 if (seekBar != null) {
-                    tempRotate+= (seekBar.progress.toFloat() - 45)
+                    tempRotate = (seekBar.progress.toFloat() - 45)
                     scaleCoof = (abs(seekBar.progress.toFloat() - 45)) * coof + 1
                 }
             }
 
         })
         btn_rotate.setOnClickListener{
-            rotate+= 90 + tempRotate
+            var matrix = Matrix()
+            matrix.postRotate(90f)
+            bitmap = Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                bitmap.width,
+                bitmap.height,
+                matrix,
+                true
+            )
             tempRotate = 0f
-            image_view.animate().rotation(rotate)
             seekBar.progress = 45
+            image_view.setImageBitmap(bitmap)
+            image_view.animate().scaleX(1f)
+            image_view.animate().scaleY(1f)
+            scaleCoof = 1f
         }
         btn_save.setOnClickListener{
             rotate+= tempRotate
@@ -115,15 +130,12 @@ class RotationActivity : AppCompatActivity() {
         return Bitmap.createBitmap(newBitmapArray.toIntArray(),newWidth, newHeight, Bitmap.Config.ARGB_8888)
     }
     private fun bitmapToFile(bitmap:Bitmap): Uri {
-        // Get the context wrapper
         val wrapper = ContextWrapper(applicationContext)
 
-        // Initialize a new file instance to save bitmap object
         var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
         file = File(file,"${UUID.randomUUID()}.jpg")
 
         try{
-            // Compress the bitmap and save in jpg format
             val stream: OutputStream = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
             stream.flush()
@@ -132,7 +144,6 @@ class RotationActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        // Return the saved bitmap uri
         return Uri.parse(file.absolutePath)
     }
 

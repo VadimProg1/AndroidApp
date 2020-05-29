@@ -1,18 +1,16 @@
 package com.example.mobile_app_photo_edit
 
-import android.app.Activity
-import android.content.Intent
-import android.graphics.Path
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.INVISIBLE
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_spline_interpolation.*
-import kotlin.math.nextDown
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.sqrt
 
-var dott: MutableList<dotSS> = ArrayList()
+var dott: MutableList<dot> = ArrayList()
 
 class SplineInterpolationActivity : AppCompatActivity() {
 
@@ -38,7 +36,7 @@ class SplineInterpolationActivity : AppCompatActivity() {
                 MotionEvent.ACTION_DOWN -> {
                     if(!changingSpline) {
                         canvasSpline.drawDot(motionTouchEventX, motionTouchEventY, drawSpline)
-                        dott.add(dotSS(motionTouchEventX, motionTouchEventY))
+                        dott.add(dot(motionTouchEventX, motionTouchEventY))
                     }
                     if(changingSpline){
                         check = checkNewDot(motionTouchEventX, motionTouchEventY)
@@ -50,34 +48,50 @@ class SplineInterpolationActivity : AppCompatActivity() {
                 MotionEvent.ACTION_MOVE -> {
                     if(changingSpline){
                         if(check) {
-                            //findNewDot(motionTouchEventX, motionTouchEventY)
-                            //checkNewDot(motionTouchEventX, motionTouchEventY)
                             dott[indexNewDot].x = motionTouchEventX
                             dott[indexNewDot].y = motionTouchEventY
+                            if(indexNewDot == dott.size - 1) {
+                                if (dott[indexNewDot].x < dott[indexNewDot - 1].x) {
+                                    indexNewDot--
+                                }
+                            }
+                            else if(indexNewDot == 0) {
+                                if (dott[indexNewDot].x > dott[indexNewDot + 1].x) {
+                                    indexNewDot++
+                                }
+                            }
+                            else{
+                                if (dott[indexNewDot].x < dott[indexNewDot - 1].x) {
+                                    indexNewDot--
+                                }
+                                else if (dott[indexNewDot].x > dott[indexNewDot + 1].x) {
+                                    indexNewDot++
+                                }
+                            }
+                            dott.sortBy { it.x }
                             canvasSpline.pathN.reset()
                             canvasSpline.pathDot.reset()
                             interpolation()
                         }
                     }
                 }
-                MotionEvent.ACTION_UP -> {
-
-                }
+                MotionEvent.ACTION_UP -> {}
             }
             true
         })
 
         btn_interpolation.setOnClickListener{
             btn_interpolation.visibility = INVISIBLE
+            dott.sortBy { it.x }
             interpolation()
         }
     }
 
     private fun checkNewDot(x: Float, y: Float): Boolean{
-        for(i in 0.. dott.size - 1) {
+        for(i in 0 until dott.size) {
             var startX = dott[i].x
             var startY = dott[i].y
-            if(sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY)) < 100){
+            if(sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY)) < 80){
                 return true
             }
         }
@@ -86,10 +100,10 @@ class SplineInterpolationActivity : AppCompatActivity() {
 
     private fun findIndexNewDot(x: Float, y: Float): Int{
         var indexDot: Int = 0
-        for(i in 0.. dott.size - 1) {
+        for(i in 0 until dott.size) {
             var startX = dott[i].x
             var startY = dott[i].y
-            if(sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY)) < 100){
+            if(sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY)) < 80){
                 indexDot = i
                 break
             }
@@ -146,4 +160,4 @@ class SplineInterpolationActivity : AppCompatActivity() {
 }
 
 
-class dotSS(var x: Float, var y: Float)
+class dot(var x: Float, var y: Float)

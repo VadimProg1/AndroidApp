@@ -30,50 +30,40 @@ class ColorFiltersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_color_filtres)
 
-        image_uri = intent.getParcelableExtra(MainActivity.MY_MESSAGE_KEY)
+        image_uri = intent.getParcelableExtra(MainActivity.ACTIVITIES_MESSAGE_KEY)
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
-
-        val stream = ByteArrayOutputStream()
-        bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val byteArray = stream.toByteArray()
-        bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         image_view.setImageBitmap(bitmap)
 
 
         btn_blackwhite.setOnClickListener{
             progressBar.visibility = VISIBLE
             ProgressBarListener("baw")
-           // BlackWhite()
         }
 
-        btn_filter1.setOnClickListener{
+        btn_filterEmboss.setOnClickListener{
             progressBar.visibility = VISIBLE
             ProgressBarListener("emboss")
-           // EmbossFilter()
         }
-        btn_filter2.setOnClickListener{
+        btn_filterSharpen.setOnClickListener{
             progressBar.visibility = VISIBLE
             ProgressBarListener("sharpen")
-            //SharpenFilter()
         }
 
-        btn_filter3.setOnClickListener{
+        btn_filterBlur.setOnClickListener{
             progressBar.visibility = VISIBLE
             ProgressBarListener("blur")
         }
 
-        btn_filter4.setOnClickListener{
+        btn_filterContrast.setOnClickListener{
             progressBar.visibility = VISIBLE
             ProgressBarListener("contrast")
-            //ContrastFilter()
         }
         btn_save.setOnClickListener{
            image_uri = bitmapToFile(bitmap!!)
             onBackPressed()
         }
-
     }
 
     private fun ProgressBarListener(code: String){
@@ -94,29 +84,32 @@ class ColorFiltersActivity : AppCompatActivity() {
                 BlackWhite()
             }
             uiThread {
-                // use result here if you want to update ui
                 progressBar.visibility = INVISIBLE
             }
         }
     }
 
     private fun ContrastFilter(){
-
         var bitmapArray = IntArray(bitmap!!.height * bitmap!!.width)
         bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
 
         val coof = 1.6f
-        val bee = 10
+        val lightUp = 10
+        var pixelColor = 0
+        var pixelA = 0
+        var pixelRed = 0
+        var pixelBlue = 0
+        var pixelGreen = 0
         for (Y in 0 until bitmap!!.height - 1) {
             for (X in 0 until bitmap!!.width - 1) {
-                var pixelColor = bitmapArray[Y * bitmap!!.width + X]
-                var pixelA = Color.alpha(pixelColor)
-                var pixelRed = Color.red(pixelColor)
-                var pixelBlue = Color.blue(pixelColor)
-                var pixelGreen = Color.green(pixelColor)
-                pixelRed = (coof * (pixelRed - 128) + 128 + bee).toInt()
-                pixelGreen = (coof * (pixelGreen - 128) + 128 + bee).toInt()
-                pixelBlue = (coof * (pixelBlue - 128) + 128 + bee).toInt()
+                pixelColor = bitmapArray[Y * bitmap!!.width + X]
+                pixelA = Color.alpha(pixelColor)
+                pixelRed = Color.red(pixelColor)
+                pixelBlue = Color.blue(pixelColor)
+                pixelGreen = Color.green(pixelColor)
+                pixelRed = (coof * (pixelRed - 128) + 128 + lightUp).toInt()
+                pixelGreen = (coof * (pixelGreen - 128) + 128 + lightUp).toInt()
+                pixelBlue = (coof * (pixelBlue - 128) + 128 + lightUp).toInt()
                 if(pixelRed < 0){
                     pixelRed = 0
                 }
@@ -147,15 +140,22 @@ class ColorFiltersActivity : AppCompatActivity() {
         var bitmapArray = IntArray(bitmap!!.height * bitmap!!.width)
         bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
 
+        var pixelColor = 0
+        var pixelAlpha = 0
+        var pixelRed = 0
+        var pixelBlue = 0
+        var pixelGreen = 0
+        var pixelAverage = 0
+        var newPixel = 0
         for(Y in 0 until bitmap!!.height - 1){
-            for(X in 1 until bitmap!!.width - 1){
-                var pixelColor = bitmapArray[Y * bitmap!!.width + X]
-                var pixelAlpha = Color.alpha(pixelColor)
-                var pixelRed = Color.red(pixelColor)
-                var pixelBlue = Color.blue(pixelColor)
-                var pixelGreen = Color.green(pixelColor)
-                var pixelAverage = (pixelRed + pixelBlue + pixelGreen) / 3
-                val newPixel = Color.argb(pixelAlpha, pixelAverage, pixelAverage, pixelAverage)
+            for(X in 0 until bitmap!!.width - 1){
+               pixelColor = bitmapArray[Y * bitmap!!.width + X]
+                pixelAlpha = Color.alpha(pixelColor)
+                pixelRed = Color.red(pixelColor)
+                pixelBlue = Color.blue(pixelColor)
+                pixelGreen = Color.green(pixelColor)
+                pixelAverage = (pixelRed + pixelBlue + pixelGreen) / 3
+                newPixel = Color.argb(pixelAlpha, pixelAverage, pixelAverage, pixelAverage)
                 bitmapArray[Y * bitmap!!.width + X] = newPixel
             }
         }
@@ -174,18 +174,28 @@ class ColorFiltersActivity : AppCompatActivity() {
             intArrayOf(-1, 1, 1),
             intArrayOf(0, 1, 2)
         )
+
+        var newPixelValueR = 0
+        var newPixelValueG = 0
+        var newPixelValueB = 0
+        var pixelColor = 0
+        var pixelValueR = 0
+        var pixelValueG= 0
+        var pixelValueB= 0
+        var pixelValueA = 0
+        var newPixel = 0
         for(i in 0..1) {
             for (Y in 1 until bitmap!!.height - 1) {
                 for (X in 1 until bitmap!!.width - 1) {
-                    var newPixelValueR = 0
-                    var newPixelValueG = 0
-                    var newPixelValueB = 0
+                    newPixelValueR = 0
+                    newPixelValueG = 0
+                    newPixelValueB = 0
                     for (YK in -1..1) {
                         for (XK in -1..1) {
-                            var pixelColor = bitmapArray[(Y + YK) * bitmap!!.width + (X + XK)]
-                            val pixelValueR = (Color.red(pixelColor))
-                            val pixelValueG= (Color.green(pixelColor))
-                            val pixelValueB= (Color.blue(pixelColor))
+                            pixelColor = bitmapArray[(Y + YK) * bitmap!!.width + (X + XK)]
+                            pixelValueR = (Color.red(pixelColor))
+                            pixelValueG= (Color.green(pixelColor))
+                            pixelValueB= (Color.blue(pixelColor))
                             newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
                             newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
                             newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
@@ -211,9 +221,9 @@ class ColorFiltersActivity : AppCompatActivity() {
                         newPixelValueB = 255
                     }
 
-                    var pixelColor = bitmapArray[Y * bitmap!!.width + X]
-                    val pixelValueA = Color.alpha(pixelColor)
-                    val newPixel = Color.argb(
+                    pixelColor = bitmapArray[Y * bitmap!!.width + X]
+                    pixelValueA = Color.alpha(pixelColor)
+                    newPixel = Color.argb(
                         pixelValueA,
                         (newPixelValueR),
                         (newPixelValueG),
@@ -241,18 +251,28 @@ class ColorFiltersActivity : AppCompatActivity() {
         bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
         bitmap!!.getPixels(newBitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
 
+        var newPixelValueR = 0
+        var newPixelValueG = 0
+        var newPixelValueB = 0
+        var pixelColor = 0
+        var pixelValueR = 0
+        var pixelValueG= 0
+        var pixelValueB= 0
+        var pixelValueA = 0
+        var newPixel = 0
+
         for(i in 0..1) {
             for (Y in 2 until bitmap!!.height - 3) {
                 for (X in 2 until bitmap!!.width - 3) {
-                    var newPixelValueR = 0
-                    var newPixelValueG = 0
-                    var newPixelValueB = 0
+                    newPixelValueR = 0
+                    newPixelValueG = 0
+                    newPixelValueB = 0
                     for (YK in -1..3) {
                         for (XK in -1..3) {
-                            var pixelColor = bitmapArray[(Y + YK) * bitmap!!.width + (X + XK)]
-                            val pixelValueR = (Color.red(pixelColor))
-                            val pixelValueG= (Color.green(pixelColor))
-                            val pixelValueB= (Color.blue(pixelColor))
+                            pixelColor = bitmapArray[(Y + YK) * bitmap!!.width + (X + XK)]
+                            pixelValueR = (Color.red(pixelColor))
+                            pixelValueG= (Color.green(pixelColor))
+                            pixelValueB= (Color.blue(pixelColor))
                             newPixelValueR += kernel[YK + 1][XK + 1] * pixelValueR
                             newPixelValueG += kernel[YK + 1][XK + 1] * pixelValueG
                             newPixelValueB += kernel[YK + 1][XK + 1] * pixelValueB
@@ -282,9 +302,9 @@ class ColorFiltersActivity : AppCompatActivity() {
                         newPixelValueB = 255
                     }
 
-                    var pixelColor = bitmapArray[Y * bitmap!!.width + X]
-                    val pixelValueA = Color.alpha(pixelColor)
-                    val newPixel = Color.argb(
+                    pixelColor = bitmapArray[Y * bitmap!!.width + X]
+                    pixelValueA = Color.alpha(pixelColor)
+                    newPixel = Color.argb(
                         pixelValueA,
                         (newPixelValueR),
                         (newPixelValueG),
@@ -356,15 +376,12 @@ class ColorFiltersActivity : AppCompatActivity() {
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {
-        // Get the context wrapper
         val wrapper = ContextWrapper(applicationContext)
 
-        // Initialize a new file instance to save bitmap object
         var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
         file = File(file,"${UUID.randomUUID()}.jpg")
 
         try{
-            // Compress the bitmap and save in jpg format
             val stream: OutputStream = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
             stream.flush()
@@ -373,7 +390,6 @@ class ColorFiltersActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
-        // Return the saved bitmap uri
         return Uri.parse(file.absolutePath)
     }
 

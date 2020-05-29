@@ -2,8 +2,11 @@ package com.example.mobile_app_photo_edit
 
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
@@ -16,12 +19,17 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
-    var check: Boolean = false
     var image_uri: Uri? = null
+    var bitmap: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,63 +37,63 @@ class MainActivity : AppCompatActivity() {
         //Не забыть добавить иконки https://www.youtube.com/watch?v=ncHjCsoj0Ws
         fun_button.setOnClickListener{
             if(image_uri != null) {
-                check = true
                 val popupMenu = PopupMenu(this, it)
                 popupMenu.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.image_rotation -> {
-                            var intent = Intent(MainActivity@this, RotationActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+                            var intent = Intent(this, RotationActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_broken_lines -> {
-                            var intent = Intent(MainActivity@this, SplineInterpolationActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+                            var intent = Intent(this, SplineInterpolationActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_color_correction -> {
-                            var intent = Intent(MainActivity@this, ColorFiltersActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
-                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                            true
-                        }
-                        R.id.image_filtres -> {
-                            var intent = Intent(MainActivity@this, AffineTransformationsActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+                            var intent = Intent(this, ColorFiltersActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_retouching -> {
-                            var intent = Intent(MainActivity@this, RetouchingActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+                            var intent = Intent(this, RetouchingActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_scaling -> {
-                            var intent = Intent(MainActivity@this, ScalingActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+
+                            var intent = Intent(this, ScalingActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.image_unsharp_masking -> {
-                            var intent = Intent(MainActivity@this, UnsharpMaskingActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+                            var intent = Intent(this, UnsharpMaskingActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
                         R.id.cube_3d -> {
-                            var intent = Intent(MainActivity@this, Cube3DActivity::class.java)
-                            intent.putExtra(MainActivity.MY_MESSAGE_KEY,image_uri)
-                            startActivityForResult(intent, 222)
+                            var intent = Intent(this, Cube3DActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                            true
+                        }
+                        R.id.shashlick -> {
+                            var intent = Intent(this, ShashlickActivity::class.java)
+                            intent.putExtra(MainActivity.ACTIVITIES_MESSAGE_KEY,image_uri)
+                            startActivityForResult(intent, ACTIVITIES_CODE)
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             true
                         }
@@ -159,7 +167,8 @@ class MainActivity : AppCompatActivity() {
         private val IMAGE_CAPTURE_CODE: Int = 1002
         private val IMAGE_PICK_CODE = 1000
         private val PERMISSION_CODE = 1001
-        val MY_MESSAGE_KEY = "Lol"
+        private val ACTIVITIES_CODE = 1111
+        val ACTIVITIES_MESSAGE_KEY = "Secret massage"
     }
 
     override fun onRequestPermissionsResult(
@@ -173,7 +182,9 @@ class MainActivity : AppCompatActivity() {
                     pickImageFromGallery()
                 }
                 else{
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                    val toast = Toast.makeText(applicationContext, "Permission denied", Toast.LENGTH_SHORT)
+                    toast.setGravity(Gravity.CENTER, 0, 0)
+                    toast.show()
                 }
             }
         }
@@ -188,7 +199,7 @@ class MainActivity : AppCompatActivity() {
         else if(resultCode == Activity.RESULT_OK && requestCode == PERMISSION_CODE){
             image_view.setImageURI(image_uri)
         }
-        else if(resultCode == Activity.RESULT_OK){
+        else if(resultCode == Activity.RESULT_OK && requestCode == ACTIVITIES_CODE){
             val temp  = data!!.getStringExtra("uri")
             image_uri = Uri.parse(temp)
             image_view.setImageURI(image_uri)
@@ -224,5 +235,6 @@ class MainActivity : AppCompatActivity() {
             return false
         }
     }
+
 }
 

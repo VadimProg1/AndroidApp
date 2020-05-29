@@ -20,26 +20,22 @@ class CanvasSplineInterpolation : View {
     var pathN = Path()
     var pathDot = Path()
     val paint = Paint().apply {
-        color = Color.BLACK
-        // Smooths out edges of what is drawn without affecting shape.
+        color = Color.WHITE
         isAntiAlias = true
-        // Dithering affects how colors with higher-precision than the device are down-sampled.
         isDither = true
-        style = Paint.Style.STROKE // default: FILL
-        strokeJoin = Paint.Join.ROUND // default: MITER
-        strokeCap = Paint.Cap.ROUND // default: BUTT
-        strokeWidth = 20f // default: Hairline-width (really thin)
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 20f
     }
     val paintDot = Paint().apply {
         color = Color.BLACK
-        // Smooths out edges of what is drawn without affecting shape.
         isAntiAlias = true
-        // Dithering affects how colors with higher-precision than the device are down-sampled.
         isDither = true
-        style = Paint.Style.STROKE // default: FILL
-        strokeJoin = Paint.Join.ROUND // default: MITER
-        strokeCap = Paint.Cap.ROUND // default: BUTT
-        strokeWidth = 40f // default: Hairline-width (really thin)
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 40f
     }
     var drawSpline = false
     lateinit var a: FloatArray
@@ -90,8 +86,8 @@ class CanvasSplineInterpolation : View {
             }
             pathDot.moveTo(dott[dott.size - 1].x, dott[dott.size - 1].y)
             pathDot.lineTo(dott[dott.size - 1].x, dott[dott.size - 1].y)
-            canvas.drawPath(pathDot, paintDot)
             canvas.drawPath(pathN, paint)
+            canvas.drawPath(pathDot, paintDot)
         }
     }
 

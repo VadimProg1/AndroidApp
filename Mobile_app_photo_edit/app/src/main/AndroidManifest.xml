@@ -13,7 +13,10 @@
         android:roundIcon="@drawable/ic_avocaydo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ScalingActivity"></activity>
+        <activity android:name=".ShashlickActivity"></activity>
+        <activity android:name=".ShahlActivity" />
+        <activity android:name=".ShashlikActivity" />
+        <activity android:name=".ScalingActivity" />
         <activity android:name=".SplineInterpolationActivity" />
         <activity android:name=".AffineTransformationsActivity" />
         <activity android:name=".Cube3DActivity" />

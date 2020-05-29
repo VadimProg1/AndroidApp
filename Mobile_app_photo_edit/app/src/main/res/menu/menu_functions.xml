@@ -16,7 +16,7 @@
     <item
         android:id="@+id/image_broken_lines"
         android:icon="@drawable/ic_launcher_background"
-        android:title="Drawing broken lines" />
+        android:title="Spline interpolation" />
     <item
         android:id="@+id/image_retouching"
         android:title="Retouching"
@@ -26,13 +26,13 @@
         android:title="Unsharp masking"
         android:icon="@drawable/ic_launcher_background"/>
     <item
-        android:id="@+id/image_filtres"
-        android:icon="@drawable/ic_launcher_background"
-        android:title="Filtrations" />
-    <item
         android:id="@+id/cube_3d"
         android:icon="@drawable/ic_launcher_background"
         android:title="3D cube" />
+    <item
+        android:id="@+id/shashlick"
+        android:icon="@drawable/ic_launcher_background"
+        android:title="Shashlick calculator" />
 
 
 </menu>
