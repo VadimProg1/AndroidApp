@@ -1,9 +1,11 @@
 package com.example.mobile_app_photo_edit
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.INVISIBLE
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_spline_interpolation.*
 import java.util.*
@@ -81,9 +83,16 @@ class SplineInterpolationActivity : AppCompatActivity() {
         })
 
         btn_interpolation.setOnClickListener{
-            btn_interpolation.visibility = INVISIBLE
-            dott.sortBy { it.x }
-            interpolation()
+            if(dott.size > 1) {
+                btn_interpolation.visibility = INVISIBLE
+                dott.sortBy { it.x }
+                interpolation()
+            }
+            else{
+                val toast = Toast.makeText(applicationContext, "Set dots", Toast.LENGTH_SHORT)
+                toast.setGravity(Gravity.CENTER, 0, 0)
+                toast.show()
+            }
         }
     }
 

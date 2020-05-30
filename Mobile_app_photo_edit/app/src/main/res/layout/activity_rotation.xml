@@ -21,18 +21,6 @@
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintVertical_bias="1.0"/>
 
-    <Button
-        android:id="@+id/btn_rotate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="90°"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.971" />
-
     <SeekBar
         android:id="@+id/seekBar"
 
@@ -48,18 +36,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.894" />
 
-    <Button
-        android:id="@+id/btn_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.972" />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -74,17 +50,18 @@
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
         app:layout_constraintVertical_bias="0.318" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="@+id/image_view"
-        app:layout_constraintEnd_toEndOf="@+id/image_view"
-        app:layout_constraintStart_toStartOf="@+id/image_view"
-        app:layout_constraintTop_toTopOf="@+id/image_view"
-        app:srcCompat="@drawable/ramka" />
+    <ImageButton
+        android:id="@+id/btn_rotate"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/oval_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.994"
+        app:srcCompat="@drawable/nanine" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

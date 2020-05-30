@@ -10,12 +10,15 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View.OnTouchListener
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.scale
 import kotlinx.android.synthetic.main.activity_color_filtres.*
-import kotlinx.android.synthetic.main.activity_color_filtres.btn_save
 import kotlinx.android.synthetic.main.activity_main.image_view
 import kotlinx.android.synthetic.main.activity_retouching.*
 import java.io.File
@@ -43,12 +46,14 @@ class RetouchingActivity : AppCompatActivity() {
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
-
         bmp_Copy = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
+        /*
         btn_save.setOnClickListener{
             image_uri = bitmapToFile(bitmap!!)
             onBackPressed()
         }
+
+         */
 
         image_view.setOnTouchListener(OnTouchListener { v, event ->
             val action = event.action
@@ -127,6 +132,24 @@ class RetouchingActivity : AppCompatActivity() {
 
         bitmap = bmp_Copy
         image_view.setImageBitmap(bmp_Copy)
+    }
+
+    private fun saveImage(){
+        image_uri = bitmapToFile(bitmap!!)
+        onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_save_activity_result, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+        when (itemview) {
+            R.id.btn_image_save_activity_result -> saveImage()
+        }
+        return false
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {

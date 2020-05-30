@@ -10,6 +10,8 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
@@ -59,10 +61,6 @@ class ColorFiltersActivity : AppCompatActivity() {
         btn_filterContrast.setOnClickListener{
             progressBar.visibility = VISIBLE
             ProgressBarListener("contrast")
-        }
-        btn_save.setOnClickListener{
-           image_uri = bitmapToFile(bitmap!!)
-            onBackPressed()
         }
     }
 
@@ -375,6 +373,24 @@ class ColorFiltersActivity : AppCompatActivity() {
         image_view.setImageBitmap(bitmap!!)
     }
 
+    private fun saveImage(){
+        image_uri = bitmapToFile(bitmap!!)
+        onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_save_activity_result, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+        when (itemview) {
+            R.id.btn_image_save_activity_result -> saveImage()
+        }
+        return false
+    }
+
     private fun bitmapToFile(bitmap:Bitmap): Uri {
         val wrapper = ContextWrapper(applicationContext)
 
@@ -401,6 +417,5 @@ class ColorFiltersActivity : AppCompatActivity() {
         super.onBackPressed()
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
-
 }
 

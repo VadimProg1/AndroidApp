@@ -9,6 +9,8 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -16,7 +18,6 @@ import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.createBitmap
 import kotlinx.android.synthetic.main.activity_color_filtres.*
-import kotlinx.android.synthetic.main.activity_color_filtres.btn_save
 import kotlinx.android.synthetic.main.activity_main.image_view
 import kotlinx.android.synthetic.main.activity_spline_interpolation.view.*
 import kotlinx.android.synthetic.main.activity_unsharp_masking.*
@@ -81,7 +82,6 @@ class UnsharpMaskingActivity : AppCompatActivity() {
         btn_coof.setOnClickListener{
             btn_done.visibility = VISIBLE
             btn_unsharpMasking.visibility = INVISIBLE
-            btn_save.visibility = INVISIBLE
             btn_coof.visibility = INVISIBLE
             seekBarBlur.visibility = VISIBLE
             seekBarContrast.visibility = VISIBLE
@@ -95,7 +95,6 @@ class UnsharpMaskingActivity : AppCompatActivity() {
             seekBarContrast.visibility = INVISIBLE
             seekBarSomething.visibility = INVISIBLE
             btn_unsharpMasking.visibility = VISIBLE
-            btn_save.visibility = VISIBLE
             btn_coof.visibility = VISIBLE
             btn_done.visibility = INVISIBLE
             textBlur.visibility = INVISIBLE
@@ -104,23 +103,12 @@ class UnsharpMaskingActivity : AppCompatActivity() {
         }
 
         btn_unsharpMasking.setOnClickListener{
-            progressBar1.visibility = View.VISIBLE
-            val future = doAsync {
-                contrastFilter(bitmapArray)
-                bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
-                blur(bitmapArray)
-                bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
+            contrastFilter(bitmapArray)
+            bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
+            blur(bitmapArray)
+            bitmap!!.getPixels(bitmapArray, 0, bitmap!!.width, 0, 0, bitmap!!.width, bitmap!!.height)
+            unsharpMaskingFilter(bitmapArray)
 
-                unsharpMaskingFilter(bitmapArray)
-                uiThread {
-                    progressBar1.visibility = View.INVISIBLE
-                }
-            }
-        }
-
-        btn_save.setOnClickListener{
-            image_uri = bitmapToFile(bitmap!!)
-            onBackPressed()
         }
     }
 
@@ -279,6 +267,24 @@ class UnsharpMaskingActivity : AppCompatActivity() {
             }
         }
         bitmapContrast = Bitmap.createBitmap(newBitmapArray, bitmap!!.width, bitmap!!.height, Bitmap.Config.ARGB_8888)
+    }
+
+    private fun saveImage(){
+        image_uri = bitmapToFile(bitmap!!)
+        onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_save_activity_result, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+        when (itemview) {
+            R.id.btn_image_save_activity_result -> saveImage()
+        }
+        return false
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {

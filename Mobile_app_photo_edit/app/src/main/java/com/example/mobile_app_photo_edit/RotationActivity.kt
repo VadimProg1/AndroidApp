@@ -11,6 +11,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,10 +39,10 @@ class RotationActivity : AppCompatActivity() {
         image_uri = intent.getParcelableExtra(MainActivity.ACTIVITIES_MESSAGE_KEY)
         image_view.setImageURI(image_uri)
         val drawable = image_view.drawable as BitmapDrawable
-        var bitmap = drawable.bitmap
+        bitmap = drawable.bitmap
 
-        var diag: Float = sqrt((bitmap.height * bitmap.height + bitmap.width * bitmap.width).toFloat())
-        var coof = (diag / (bitmap.height + bitmap.width)) / 35
+        var diag: Float = sqrt((bitmap!!.height * bitmap!!.height + bitmap!!.width * bitmap!!.width).toFloat())
+        var coof = (diag / (bitmap!!.height + bitmap!!.width)) / 34
 
         seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -50,9 +52,7 @@ class RotationActivity : AppCompatActivity() {
                 textView.text = (progress - 45).toString()
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 if (seekBar != null) {
@@ -66,11 +66,11 @@ class RotationActivity : AppCompatActivity() {
             var matrix = Matrix()
             matrix.postRotate(90f)
             bitmap = Bitmap.createBitmap(
-                bitmap,
+                bitmap!!,
                 0,
                 0,
-                bitmap.width,
-                bitmap.height,
+                bitmap!!.width,
+                bitmap!!.height,
                 matrix,
                 true
             )
@@ -80,31 +80,6 @@ class RotationActivity : AppCompatActivity() {
             image_view.animate().scaleX(1f)
             image_view.animate().scaleY(1f)
             scaleCoof = 1f
-        }
-        btn_save.setOnClickListener{
-            rotate+= tempRotate
-            var matrix = Matrix()
-            var oldHeight = bitmap.height
-            var oldWidth = bitmap.width
-            matrix.postRotate(rotate)
-            bitmap = Bitmap.createBitmap(
-                bitmap,
-                0,
-                0,
-                bitmap.width,
-                bitmap.height,
-                matrix,
-                true
-            )
-            if(rotate != 0f){
-                var bmp_Copy = bitmap
-                bitmap = scaling(bmp_Copy, oldHeight, oldWidth)
-            }
-            image_uri = bitmapToFile(bitmap!!)
-            rotate = 0f
-            scaleCoof = 1f
-            tempRotate = 0f
-            onBackPressed()
         }
     }
 
@@ -129,6 +104,46 @@ class RotationActivity : AppCompatActivity() {
         }
         return Bitmap.createBitmap(newBitmapArray.toIntArray(),newWidth, newHeight, Bitmap.Config.ARGB_8888)
     }
+
+    private fun saveImage(){
+        rotate+= tempRotate
+        var matrix = Matrix()
+        var oldHeight = bitmap!!.height
+        var oldWidth = bitmap!!.width
+        matrix.postRotate(rotate)
+        bitmap = Bitmap.createBitmap(
+            bitmap!!,
+            0,
+            0,
+            bitmap!!.width,
+            bitmap!!.height,
+            matrix,
+            true
+        )
+        if(rotate != 0f){
+            var bmp_Copy = bitmap
+            bitmap = scaling(bmp_Copy!!, oldHeight, oldWidth)
+        }
+        image_uri = bitmapToFile(bitmap!!)
+        rotate = 0f
+        scaleCoof = 1f
+        tempRotate = 0f
+        onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_save_activity_result, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+        when (itemview) {
+            R.id.btn_image_save_activity_result -> saveImage()
+        }
+        return false
+    }
+
     private fun bitmapToFile(bitmap:Bitmap): Uri {
         val wrapper = ContextWrapper(applicationContext)
 

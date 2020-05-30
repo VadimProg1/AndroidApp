@@ -11,9 +11,10 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.SeekBar
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_color_filtres.btn_save
 import kotlinx.android.synthetic.main.activity_color_filtres.image_view
 import kotlinx.android.synthetic.main.activity_rotation.*
 import java.io.File
@@ -54,11 +55,6 @@ class ScalingActivity : AppCompatActivity() {
 
         })
 
-        btn_save.setOnClickListener{
-            scaling()
-            image_uri = bitmapToFile(bitmap!!)
-            onBackPressed()
-        }
     }
 
     private fun scaling(){
@@ -136,6 +132,25 @@ class ScalingActivity : AppCompatActivity() {
         var a = c00 * (1 - tx) + c10 * tx
         var b = c01 * (1 - tx) + c11 * tx
         return (a * (1 - ty) + b * ty).toInt()
+    }
+
+    private fun saveImage(){
+        scaling()
+        image_uri = bitmapToFile(bitmap!!)
+        onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_save_activity_result, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        var itemview = item.itemId
+        when (itemview) {
+            R.id.btn_image_save_activity_result -> saveImage()
+        }
+        return false
     }
 
     private fun bitmapToFile(bitmap:Bitmap): Uri {
