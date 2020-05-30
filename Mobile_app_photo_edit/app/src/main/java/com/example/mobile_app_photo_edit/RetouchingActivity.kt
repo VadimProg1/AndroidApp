@@ -47,13 +47,6 @@ class RetouchingActivity : AppCompatActivity() {
         val drawable = image_view.drawable as BitmapDrawable
         bitmap = drawable.bitmap
         bmp_Copy = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
-        /*
-        btn_save.setOnClickListener{
-            image_uri = bitmapToFile(bitmap!!)
-            onBackPressed()
-        }
-
-         */
 
         image_view.setOnTouchListener(OnTouchListener { v, event ->
             val action = event.action

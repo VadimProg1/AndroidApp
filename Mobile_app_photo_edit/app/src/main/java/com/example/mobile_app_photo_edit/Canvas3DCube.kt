@@ -186,7 +186,6 @@ class Canvas3DCube : View {
             initSquare()
             initNums()
         }
-
         var d = mWidth
         canvas.scale(0.5f, 0.5f)
 

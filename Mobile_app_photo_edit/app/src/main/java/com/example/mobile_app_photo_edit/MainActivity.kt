@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Не забыть добавить иконки https://www.youtube.com/watch?v=ncHjCsoj0Ws
         fun_button.setOnClickListener{
             if(image_uri != null) {
                 val popupMenu = PopupMenu(this, it)
@@ -155,13 +154,11 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, PERMISSION_CODE)
     }
 
-
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, 111)
     }
-
 
     companion object{
         private val IMAGE_CAPTURE_CODE: Int = 1002

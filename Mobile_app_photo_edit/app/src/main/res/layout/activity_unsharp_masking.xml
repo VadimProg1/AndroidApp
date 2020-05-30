@@ -9,17 +9,17 @@
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="378dp"
-        android:layout_height="437dp"
+        android:layout_width="335dp"
+        android:layout_height="418dp"
         android:layout_margin="16dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/btn_unsharpMasking"
+        app:layout_constraintBottom_toTopOf="@+id/seekBarBlur"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.646"
+        app:layout_constraintVertical_bias="0.125"
         app:srcCompat="?attr/selectableItemBackground" />
 
     <ImageButton
@@ -29,9 +29,10 @@
         android:background="@drawable/oval_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.743"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.994"
+        app:layout_constraintVertical_bias="0.99"
         app:srcCompat="@drawable/mask3" />
 
     <ProgressBar
@@ -60,43 +61,44 @@
 
     <Button
         android:id="@+id/btn_done"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:background="@drawable/oval_button"
         android:text="OK"
+        android:textColor="#FFFFFF"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/image_view"
+        app:layout_constraintBottom_toTopOf="@+id/seekBarBlur"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.958"
+        app:layout_constraintHorizontal_bias="0.907"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.333" />
+        app:layout_constraintVertical_bias="0.963" />
 
     <SeekBar
         android:id="@+id/seekBarSomething"
         android:layout_width="275dp"
-        android:layout_height="18dp"
+        android:layout_height="25dp"
         android:max="50"
         android:min="0"
         android:progress="25"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.867"
+        app:layout_constraintHorizontal_bias="0.801"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.972" />
+        app:layout_constraintVertical_bias="0.989" />
 
     <SeekBar
         android:id="@+id/seekBarContrast"
         android:layout_width="275dp"
-        android:layout_height="18dp"
+        android:layout_height="25dp"
         android:max="5"
         android:min="0"
         android:progress="1"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/seekBarSomething"
-        app:layout_constraintHorizontal_bias="0.882"
+        app:layout_constraintHorizontal_bias="0.802"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -105,28 +107,28 @@
     <SeekBar
         android:id="@+id/seekBarBlur"
         android:layout_width="275dp"
-        android:layout_height="18dp"
+        android:layout_height="25dp"
         android:max="2"
         android:min="0"
         android:progress="1"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/seekBarContrast"
-        app:layout_constraintHorizontal_bias="0.882"
+        app:layout_constraintHorizontal_bias="0.802"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.972" />
+        app:layout_constraintVertical_bias="0.968" />
 
     <TextView
         android:id="@+id/textContrast"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="25dp"
         android:text="Intensity"
         android:textColor="#EFE6E6"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/seekBarContrast"
         app:layout_constraintEnd_toStartOf="@+id/seekBarBlur"
-        app:layout_constraintHorizontal_bias="0.261"
+        app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/seekBarBlur"
         app:layout_constraintVertical_bias="0.0" />
@@ -134,13 +136,13 @@
     <TextView
         android:id="@+id/textBlur"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="25dp"
         android:text="Radius"
         android:textColor="#EFE6E6"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBarContrast"
         app:layout_constraintEnd_toStartOf="@+id/seekBarContrast"
-        app:layout_constraintHorizontal_bias="0.22"
+        app:layout_constraintHorizontal_bias="0.825"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/seekBarContrast"
         app:layout_constraintVertical_bias="0.0" />
@@ -148,15 +150,15 @@
     <TextView
         android:id="@+id/textSomething"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Threshold slider"
+        android:layout_height="25dp"
+        android:text="Threshold"
         android:textColor="#EFE6E6"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBarSomething"
         app:layout_constraintEnd_toStartOf="@+id/seekBarSomething"
-        app:layout_constraintHorizontal_bias="0.888"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/seekBarSomething"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

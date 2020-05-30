@@ -19,6 +19,7 @@ class CanvasSplineInterpolation : View {
     var path = Path()
     var pathN = Path()
     var pathDot = Path()
+
     val paint = Paint().apply {
         color = Color.WHITE
         isAntiAlias = true
@@ -28,6 +29,7 @@ class CanvasSplineInterpolation : View {
         strokeCap = Paint.Cap.ROUND
         strokeWidth = 20f
     }
+
     val paintDot = Paint().apply {
         color = Color.BLACK
         isAntiAlias = true
@@ -35,8 +37,9 @@ class CanvasSplineInterpolation : View {
         style = Paint.Style.STROKE
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
-        strokeWidth = 40f
+        strokeWidth = 30f
     }
+
     var drawSpline = false
     lateinit var a: FloatArray
     lateinit var b: FloatArray

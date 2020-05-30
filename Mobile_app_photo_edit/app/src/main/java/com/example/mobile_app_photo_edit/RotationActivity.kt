@@ -60,8 +60,8 @@ class RotationActivity : AppCompatActivity() {
                     scaleCoof = (abs(seekBar.progress.toFloat() - 45)) * coof + 1
                 }
             }
-
         })
+
         btn_rotate.setOnClickListener{
             var matrix = Matrix()
             matrix.postRotate(90f)

@@ -98,6 +98,7 @@ class ColorFiltersActivity : AppCompatActivity() {
         var pixelRed = 0
         var pixelBlue = 0
         var pixelGreen = 0
+
         for (Y in 0 until bitmap!!.height - 1) {
             for (X in 0 until bitmap!!.width - 1) {
                 pixelColor = bitmapArray[Y * bitmap!!.width + X]
@@ -145,6 +146,7 @@ class ColorFiltersActivity : AppCompatActivity() {
         var pixelGreen = 0
         var pixelAverage = 0
         var newPixel = 0
+
         for(Y in 0 until bitmap!!.height - 1){
             for(X in 0 until bitmap!!.width - 1){
                pixelColor = bitmapArray[Y * bitmap!!.width + X]
@@ -182,6 +184,7 @@ class ColorFiltersActivity : AppCompatActivity() {
         var pixelValueB= 0
         var pixelValueA = 0
         var newPixel = 0
+
         for(i in 0..1) {
             for (Y in 1 until bitmap!!.height - 1) {
                 for (X in 1 until bitmap!!.width - 1) {
@@ -324,6 +327,7 @@ class ColorFiltersActivity : AppCompatActivity() {
             floatArrayOf(4f, 16f, 24f, 16f, 4f),
             floatArrayOf(1f, 4f, 6f, 4f, 1f)
         )
+
         var newPixelValueR: Float
         var newPixelValueG: Float
         var newPixelValueB: Float

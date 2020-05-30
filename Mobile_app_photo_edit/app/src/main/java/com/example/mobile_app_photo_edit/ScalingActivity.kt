@@ -52,9 +52,7 @@ class ScalingActivity : AppCompatActivity() {
                     scaleCoof = (seekBar.progress.toFloat() / 10)
                 }
             }
-
         })
-
     }
 
     private fun scaling(){
@@ -62,6 +60,7 @@ class ScalingActivity : AppCompatActivity() {
         if(scaleCoof < 0.6){
             scaleCoof = 0.6f
         }
+
         var newWidth = (bitmap!!.width / scaleCoof).toInt()
         var newHeight = (bitmap!!.height / scaleCoof).toInt()
         bmp_Copy = Bitmap.createBitmap(newWidth,
@@ -82,6 +81,7 @@ class ScalingActivity : AppCompatActivity() {
 
         var tx: Float
         var ty:Float
+
         for(y in 1 until newHeight - 1){
             for(x in 1 until newWidth - 1){
                 var gx = (x / newWidth.toFloat()) * bitmap!!.width.toFloat()
@@ -110,9 +110,9 @@ class ScalingActivity : AppCompatActivity() {
                 c10b = Color.blue(c10)
                 c11b = Color.blue(c11)
 
-                newPixelColorR = bilinearFiltrationWasMistake(c00r, c01r, c10r, c11r, tx, ty)
-                newPixelColorG = bilinearFiltrationWasMistake(c00g, c01g, c10g, c11g, tx, ty)
-                newPixelColorB = bilinearFiltrationWasMistake(c00b, c01b, c10b, c11b, tx, ty)
+                newPixelColorR = bilinearFiltrationBranch(c00r, c01r, c10r, c11r, tx, ty)
+                newPixelColorG = bilinearFiltrationBranch(c00g, c01g, c10g, c11g, tx, ty)
+                newPixelColorB = bilinearFiltrationBranch(c00b, c01b, c10b, c11b, tx, ty)
 
                 val newPixel = Color.argb(
                     255,
@@ -128,7 +128,7 @@ class ScalingActivity : AppCompatActivity() {
         bitmap = bmp_Copy
     }
 
-    private fun bilinearFiltrationWasMistake(c00: Int, c01: Int, c10: Int, c11: Int, tx: Float, ty:Float): Int{
+    private fun bilinearFiltrationBranch(c00: Int, c01: Int, c10: Int, c11: Int, tx: Float, ty:Float): Int{
         var a = c00 * (1 - tx) + c10 * tx
         var b = c01 * (1 - tx) + c11 * tx
         return (a * (1 - ty) + b * ty).toInt()
